@@ -216,7 +216,7 @@ body button {
 	background: rgba(0, 0, 0, 0.4);
 	display: flex;
 	justify-content: center;
-	padding-top: 15vh;
+	padding-top: 72px;
 	animation: pm-search-fade 0.15s ease;
 }
 

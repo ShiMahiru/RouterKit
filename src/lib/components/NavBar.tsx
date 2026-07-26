@@ -30,13 +30,10 @@ export default function NavBar() {
 
 	useEffect(() => {
 		if (searchOpen) {
-			inputRef.current?.focus();
-			document.body.style.overflow = 'hidden';
+			setTimeout(() => inputRef.current?.focus(), 100);
 		} else {
 			setQuery('');
-			document.body.style.overflow = '';
 		}
-		return () => { document.body.style.overflow = ''; };
 	}, [searchOpen]);
 
 	useEffect(() => {
@@ -93,14 +90,14 @@ export default function NavBar() {
 								</svg>
 							</button>
 						</li>
-						{navItems.map(item => (
-							<li key={item.href}><a href={item.href} title={item.label}><span>{item.label}</span></a></li>
-						))}
 						<li>
 							<button className="pm-search-btn" title="搜索 (Ctrl+K)" aria-label="搜索" onClick={() => setSearchOpen(true)}>
 								<span>搜索</span>
 							</button>
 						</li>
+						{navItems.map(item => (
+							<li key={item.href}><a href={item.href} title={item.label}><span>{item.label}</span></a></li>
+						))}
 					</ul>
 				</nav>
 			</header>
