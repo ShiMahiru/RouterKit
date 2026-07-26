@@ -1,6 +1,6 @@
-# Yuln 的博客
+# 二叉树树的博客
 
-一个基于 SvelteKit 和 Vite 的静态博客项目。文章使用 Markdown 编写，构建后输出为纯静态文件，可部署到 Vercel、Cloudflare Pages 或 Cloudflare Workers Static Assets。
+基于 React 和 Vite 的静态博客项目。文章使用 Markdown 编写，构建后输出为纯静态文件，可部署到 Vercel、Cloudflare Pages 或 Cloudflare Workers Static Assets。
 
 ## 功能
 

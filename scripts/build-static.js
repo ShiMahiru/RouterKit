@@ -9,10 +9,13 @@ import crypto from 'crypto';
 
 const md = new MarkdownIt({ html: true, linkify: true });
 
-const SITE_URL = process.env.PUBLIC_SITE_URL || 'https://blog.2x.nz';
-const SITE_TITLE = 'Yuln';
+const SITE_URL = process.env.PUBLIC_SITE_URL || 'https://2x.nz';
+const SITE_TITLE = '博客 | 二叉树树';
+const SITE_DESC = '《二叉树树》是一个专注于 IT / 互联网技术分享与实践的个人技术博客。';
 const SITE_LANGUAGE = 'zh-CN';
 const SITE_ICON = 'https://q2.qlogo.cn/headimg_dl?dst_uin=242531778&spec=0';
+const SITE_EMAIL = 'acofork@qq.com';
+const SITE_AUTHOR = '二叉树树';
 
 // ---- Parse frontmatter ----
 function parseFrontmatter(raw) {
@@ -76,15 +79,22 @@ const publishedPosts = posts.filter(p => !p.metadata.draft);
 
 const feed = new Feed({
 	title: SITE_TITLE,
-	description: SITE_TITLE,
+	description: SITE_DESC,
 	id: SITE_URL,
 	link: SITE_URL,
 	language: SITE_LANGUAGE,
 	favicon: SITE_ICON || undefined,
-	copyright: `All rights reserved ${new Date().getFullYear()}, ${SITE_TITLE}`,
+	copyright: `All rights reserved ${new Date().getFullYear()}, ${SITE_AUTHOR}`,
 	feedLinks: { rss: `${SITE_URL}/rss.xml` },
-	author: { name: SITE_TITLE, link: SITE_URL }
+	author: { name: SITE_AUTHOR, link: SITE_URL, email: SITE_EMAIL }
 });
+
+// Add managingEditor / webMaster (feed library doesn't have these, inject after)
+let rssXml = feed.rss2();
+rssXml = rssXml.replace(
+	'</channel>',
+	`\t<managingEditor>${SITE_EMAIL} (${SITE_AUTHOR})</managingEditor>\n\t<webMaster>${SITE_EMAIL} (${SITE_AUTHOR})</webMaster>\n\t</channel>`
+);
 
 for (const post of publishedPosts) {
 	const safe = (s) => (typeof s === 'string' ? s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '') : '');
@@ -106,12 +116,13 @@ for (const post of publishedPosts) {
 		description: safeDesc || safeTitle,
 		content: html,
 		date: safeDate,
-		categories: []   // 强制不输出 <category> 标签
+		image: post.metadata.image ? `${SITE_URL}/posts/${post.slug}/${post.metadata.image}` : undefined,
+		categories: []
 	});
 }
 
 const buildDir = path.join(process.cwd(), 'build');
-fs.writeFileSync(path.join(buildDir, 'rss.xml'), feed.rss2(), 'utf8');
+fs.writeFileSync(path.join(buildDir, 'rss.xml'), rssXml, 'utf8');
 console.log('[build-static] rss.xml generated');
 
 // ---- Sitemap ----

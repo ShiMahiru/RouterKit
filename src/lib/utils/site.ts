@@ -1,4 +1,4 @@
-const FALLBACK_SITE_URL = 'https://blog.2x.nz';
+const FALLBACK_SITE_URL = 'https://2x.nz';
 
 export const SITE_LANGUAGE = 'zh-CN';
 
