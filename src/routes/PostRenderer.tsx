@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useParams, Outlet } from 'react-router';
 import { resolvePostAssetPath } from '$lib/utils/markdown';
 

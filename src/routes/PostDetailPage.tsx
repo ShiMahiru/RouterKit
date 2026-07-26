@@ -8,7 +8,6 @@ import { highlightCodeBlocksIn } from '$lib/utils/highlight';
 import { renderMermaidIn } from '$lib/utils/mermaid';
 import { countPostWords, getPostReadTime, getPostBySlug } from '$lib/utils/posts';
 import { resolvePostAssetPath } from '$lib/utils/markdown';
-import { getSiteUrl, toAbsoluteUrl } from '$lib/utils/site';
 import MarkdownIt from 'markdown-it';
 
 const md = new MarkdownIt({ html: true, linkify: true, breaks: true });
