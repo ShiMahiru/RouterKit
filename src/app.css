@@ -211,37 +211,8 @@ body button {
 	font-family: inherit;
 }
 
-.pm-nav-search-results {
-	position: absolute;
-	top: 100%;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 400px;
-	max-width: 90vw;
-	margin-top: 6px;
-	padding: 4px;
-	list-style: none;
-	background: var(--pm-entry);
-	border: 1px solid var(--pm-border);
-	border-radius: var(--pm-radius);
-	box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-	z-index: 50;
-	max-height: 360px;
-	overflow-y: auto;
-}
 
-.pm-nav-search-results li a {
-	display: block;
-	padding: 8px 10px;
-	font-size: 14px;
-	color: var(--pm-primary);
-	text-decoration: none;
-	border-radius: 4px;
-}
 
-.pm-nav-search-results li a:hover {
-	background: var(--pm-code-bg);
-}
 .pm-post-single,
 .pm-post-content {
 	min-width: 0;
