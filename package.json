@@ -1,0 +1,41 @@
+{
+	"name": "svaf",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"packageManager": "pnpm@10.33.3",
+	"engines": {
+		"node": ">=22"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"sharp"
+		]
+	},
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build && node scripts/build-static.js",
+		"preview": "vite preview",
+		"deploy:workers": "npm run build && npx --yes wrangler deploy",
+		"new-post": "node scripts/new-post.js",
+		"check": "tsc --noEmit",
+		"check:watch": "tsc --noEmit --watch"
+	},
+	"dependencies": {
+		"feed": "^5.2.1",
+		"markdown-it": "^14.1.1",
+		"photoswipe": "^5.4.4",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"react-router": "^7.0.0"
+	},
+	"devDependencies": {
+		"@types/markdown-it": "^14.1.2",
+		"@types/react": "^19.0.0",
+		"@types/react-dom": "^19.0.0",
+		"@vitejs/plugin-react": "^6.0.0",
+		"sharp": "^0.34.5",
+		"typescript": "^6.0.2",
+		"vite": "^8.0.7"
+	}
+}
