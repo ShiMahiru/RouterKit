@@ -5,6 +5,7 @@ import { getDisplayPosts, createPostSearchText } from '$lib/utils/posts';
 export default function SearchPage() {
 	const posts = useMemo(() => getDisplayPosts(), []);
 	const [query, setQuery] = useState('');
+	const [expanded, setExpanded] = useState<string | null>(null);
 
 	useEffect(() => {
 		document.title = `搜索 - ${siteConfig.title}`;
@@ -21,6 +22,10 @@ export default function SearchPage() {
 		});
 	}, [posts, term]);
 
+	function toggle(slug: string) {
+		setExpanded(prev => prev === slug ? null : slug);
+	}
+
 	return (
 		<main className="pm-main">
 			<header className="pm-page-header">
@@ -29,9 +34,9 @@ export default function SearchPage() {
 			<div className="pm-searchbox">
 				<input
 					value={query}
-					onChange={(e) => setQuery(e.target.value)}
+					onChange={(e) => { setQuery(e.target.value); setExpanded(null); }}
 					type="search"
-					placeholder="搜索文章"
+					placeholder="输入关键词搜索文章..."
 					aria-label="搜索文章"
 				/>
 			</div>
@@ -39,20 +44,31 @@ export default function SearchPage() {
 				{query.trim() && results.length === 0 ? (
 					<li className="pm-search-empty">未找到匹配的文章</li>
 				) : (
-					results.map(post => (
-						<li key={post.slug}>
-							<a
-								className="pm-entry-link"
-								href={`/posts/${post.slug}`}
-								aria-label={`文章链接：${post.metadata.title}`}
-							></a>
-							<div>
-								<h2>{post.metadata.title}</h2>
-								<p>{post.metadata.description}</p>
-							</div>
-							<span>»</span>
-						</li>
-					))
+					results.map(post => {
+						const isOpen = expanded === post.slug;
+						return (
+							<li key={post.slug}>
+								<button
+									className={`pm-search-item${isOpen ? ' open' : ''}`}
+									onClick={() => toggle(post.slug)}
+									aria-expanded={isOpen}
+								>
+									<span className="pm-search-title">{post.metadata.title}</span>
+									<span className="pm-search-arrow">{isOpen ? '▾' : '▸'}</span>
+								</button>
+								{isOpen && (
+									<div className="pm-search-detail">
+										{post.metadata.description && (
+											<p>{post.metadata.description}</p>
+										)}
+										<a href={`/posts/${post.slug}`} className="pm-search-link">
+											阅读全文 →
+										</a>
+									</div>
+								)}
+							</li>
+						);
+					})
 				)}
 			</ul>
 		</main>
