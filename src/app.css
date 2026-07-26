@@ -186,32 +186,14 @@ body button {
 	font-size: 16px;
 }
 
-
-.pm-nav-search {
+.pm-main {
 	position: relative;
-	display: flex;
-	align-items: center;
-	gap: 6px;
+	min-height: calc(100vh - var(--pm-header-height) - var(--pm-footer-height));
+	max-width: calc(var(--pm-main-width) + var(--pm-gap) * 2);
+	margin: auto;
+	padding: var(--pm-gap);
+	overflow-x: hidden;
 }
-
-.pm-nav-search-icon {
-	flex-shrink: 0;
-	color: var(--pm-secondary);
-}
-
-.pm-nav-search input {
-	width: 5em;
-	padding: 4px 8px;
-	font-size: 14px;
-	color: var(--pm-primary);
-	background: var(--pm-code-bg);
-	border: 2px solid var(--pm-tertiary);
-	border-radius: var(--pm-radius);
-	outline: none;
-	font-family: inherit;
-}
-
-
 
 .pm-post-single,
 .pm-post-content {

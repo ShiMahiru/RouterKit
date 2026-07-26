@@ -6,6 +6,7 @@ import PostDetailPage from './routes/PostDetailPage';
 import ArchivesPage from './routes/ArchivesPage';
 import TagsPage from './routes/TagsPage';
 import TagPage from './routes/TagPage';
+import SearchPage from './routes/SearchPage';
 import PostRenderer from './routes/PostRenderer';
 
 export const router = createBrowserRouter([
@@ -21,7 +22,8 @@ export const router = createBrowserRouter([
 			},
 			{ path: 'archives', element: <ArchivesPage /> },
 			{ path: 'tags', element: <TagsPage /> },
-			{ path: 'tags/:tag', element: <TagPage /> }
+			{ path: 'tags/:tag', element: <TagPage /> },
+			{ path: 'search', element: <SearchPage /> }
 		]
 	}
 ]);
