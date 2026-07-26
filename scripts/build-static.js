@@ -3,6 +3,7 @@ import { Feed } from 'feed';
 import MarkdownIt from 'markdown-it';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 import os from 'os';
 import crypto from 'crypto';
@@ -40,7 +41,9 @@ function parseFrontmatter(raw) {
 }
 
 // ---- Load posts ----
-const postsDir = path.join(process.cwd(), 'src/posts');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = path.resolve(__dirname, '..');
+const postsDir = path.join(projectRoot, 'src/posts');
 const postDirs = fs.readdirSync(postsDir).filter(name => {
 	const d = path.join(postsDir, name);
 	return fs.statSync(d).isDirectory() && fs.existsSync(path.join(d, 'index.md'));
@@ -89,17 +92,6 @@ const feed = new Feed({
 	author: { name: SITE_AUTHOR, link: SITE_URL, email: SITE_EMAIL }
 });
 
-// Add managingEditor / webMaster (feed library doesn't have these, inject after)
-let rssXml = feed.rss2();
-rssXml = rssXml.replace(
-		'<rss version="2.0"',
-		'<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"'
-	);
-rssXml = rssXml.replace(
-	'</channel>',
-	`        <managingEditor>${SITE_EMAIL} (Yuln)</managingEditor>\n        <webMaster>${SITE_EMAIL} (Yuln)</webMaster>\n        </channel>`
-);
-
 for (const post of publishedPosts) {
 	const safe = (s) => (typeof s === 'string' ? s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '') : '');
 	const safeTitle = safe(post.metadata.title)?.trim() || post.slug;
@@ -125,7 +117,20 @@ for (const post of publishedPosts) {
 	});
 }
 
-const buildDir = path.join(process.cwd(), 'build');
+// Add managingEditor / webMaster (feed library doesn't have these, inject after)
+let rssXml = feed.rss2();
+rssXml = rssXml.replace(
+    '<rss version="2.0"',
+    '<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"'
+);
+rssXml = rssXml.replace(
+    '</channel>',
+    `        <managingEditor>${SITE_EMAIL} (Yuln)</managingEditor>
+        <webMaster>${SITE_EMAIL} (Yuln)</webMaster>
+        </channel>`
+);
+
+const buildDir = path.join(projectRoot, 'build');
 fs.writeFileSync(path.join(buildDir, 'rss.xml'), rssXml, 'utf8');
 console.log('[build-static] rss.xml generated');
 
