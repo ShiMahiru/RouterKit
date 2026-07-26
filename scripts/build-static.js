@@ -117,13 +117,30 @@ for (const post of publishedPosts) {
 	});
 }
 
-// Add managingEditor / webMaster (feed library doesn't have these, inject after)
+// Post-process RSS: remove unwanted tags, add managingEditor/webMaster, add enclosure
 let rssXml = feed.rss2();
+
+// Remove xmlns:dc namespace
+rssXml = rssXml.replace(' xmlns:dc="http://purl.org/dc/elements/1.1/"', '');
+
+// Remove <docs>, <generator>, <copyright>, <language>, <lastBuildDate>
+rssXml = rssXml.replace(/\s*<docs>[^<]*<\/docs>\n?/g, '');
+rssXml = rssXml.replace(/\s*<generator>[^<]*<\/generator>\n?/g, '');
+rssXml = rssXml.replace(/\s*<copyright>[^<]*<\/copyright>\n?/g, '');
+rssXml = rssXml.replace(/\s*<language>[^<]*<\/language>\n?/g, '');
+rssXml = rssXml.replace(/\s*<lastBuildDate>[^<]*<\/lastBuildDate>\n?/g, '');
+
+// Remove <pubDate> from items
+rssXml = rssXml.replace(/\s*<pubDate>[^<]*<\/pubDate>\n?/g, '');
+	// Fix guid isPermaLink to true
+	rssXml = rssXml.replace(/<guid isPermaLink="false">/g, '<guid isPermaLink="true">');
+	// Remove auto-generated enclosures (feed library extracts from content HTML)
+	rssXml = rssXml.replace(/\s*<enclosure[^>]+\/>\n?/g, '');
+
+// Inject managingEditor + webMaster after atom:link
 rssXml = rssXml.replace(
-    '</channel>',
-    `        <managingEditor>${SITE_EMAIL} (Yuln)</managingEditor>
-        <webMaster>${SITE_EMAIL} (Yuln)</webMaster>
-        </channel>`
+	/(<atom:link[^>]+\/>)/,
+	'$1\n        <managingEditor>' + SITE_EMAIL + ' (Yuln)</managingEditor>\n        <webMaster>' + SITE_EMAIL + ' (Yuln)</webMaster>'
 );
 
 const buildDir = path.join(projectRoot, 'build');
