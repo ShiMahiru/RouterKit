@@ -213,11 +213,15 @@ body button {
 	position: fixed;
 	inset: 0;
 	z-index: 100;
-	background: rgba(0, 0, 0, 0.15);
+	background: transparent;
 	display: flex;
 	justify-content: center;
-	padding-top: 60px;
+	padding-top: 64px;
+	pointer-events: none;
 	animation: pm-search-fade 0.15s ease;
+}
+.pm-search-overlay > * {
+	pointer-events: auto;
 }
 
 @keyframes pm-search-fade {
