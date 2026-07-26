@@ -120,10 +120,6 @@ for (const post of publishedPosts) {
 // Add managingEditor / webMaster (feed library doesn't have these, inject after)
 let rssXml = feed.rss2();
 rssXml = rssXml.replace(
-    '<rss version="2.0"',
-    '<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"'
-);
-rssXml = rssXml.replace(
     '</channel>',
     `        <managingEditor>${SITE_EMAIL} (Yuln)</managingEditor>
         <webMaster>${SITE_EMAIL} (Yuln)</webMaster>
