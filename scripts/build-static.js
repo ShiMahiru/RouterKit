@@ -88,9 +88,9 @@ const feed = new Feed({
 
 for (const post of publishedPosts) {
 	const safe = (s) => (typeof s === 'string' ? s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '') : '');
-	const safeTitle = safe(post.metadata.title) || post.slug;
-	const safeDesc = safe(post.metadata.description);
-	const safeContent = safe(post.content) || safeDesc || safeTitle;
+	const safeTitle = safe(post.metadata.title)?.trim() || post.slug;
+	const safeDesc = safe(post.metadata.description)?.trim();
+	const safeContent = safe(post.content)?.trim() || safeDesc || safeTitle;
 	const pubDate = new Date(post.metadata.published);
 	const safeDate = isNaN(pubDate.getTime()) ? new Date() : pubDate;
 
