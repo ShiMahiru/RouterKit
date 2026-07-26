@@ -57,7 +57,6 @@ export default function PostDetailPage() {
 	useEffect(() => {
 		if (!post || !slug) return;
 		let html = md.render(post.content);
-		// Fix relative image paths
 		html = html.replace(
 			/(<img[^>]+src=")(?!\/|https?:\/\/)([^"]+)(")/g,
 			(_m: string, before: string, src: string, after: string) =>
@@ -92,27 +91,14 @@ export default function PostDetailPage() {
 
 	if (!post) return <Navigate to="/posts" replace />;
 
-	const siteUrl = getSiteUrl();
 	const showToc = post.metadata.toc === true;
+
+	useEffect(() => {
+		if (post) document.title = `${post.metadata.title} - ${siteConfig.title}`;
+	}, [post]);
 
 	return (
 		<>
-			<title>{post.metadata.title} - {siteConfig.title}</title>
-			<meta name="description" content={post.metadata.description} />
-			<meta property="og:type" content="article" />
-			<meta property="og:title" content={post.metadata.title} />
-			<meta property="og:description" content={post.metadata.description} />
-			<meta property="og:url" content={`${siteUrl}/posts/${slug}/`} />
-			{post.metadata.image && (
-				<>
-					<meta property="og:image" content={toAbsoluteUrl(post.metadata.image)} />
-					<meta name="twitter:card" content="summary_large_image" />
-					<meta name="twitter:image" content={toAbsoluteUrl(post.metadata.image)} />
-				</>
-			)}
-			<meta name="twitter:title" content={post.metadata.title} />
-			<meta name="twitter:description" content={post.metadata.description} />
-
 			<main className="pm-main">
 				<article className="pm-post-single">
 					<header className="pm-post-header">
@@ -165,7 +151,6 @@ export default function PostDetailPage() {
 					</div>
 				</article>
 			</main>
-
 			<ImageViewer />
 		</>
 	);

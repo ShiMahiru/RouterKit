@@ -1,9 +1,13 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { siteConfig } from '../config';
 import { getDisplayPosts } from '$lib/utils/posts';
 
 export default function ArchivesPage() {
 	const posts = useMemo(() => getDisplayPosts(), []);
+
+	useEffect(() => {
+		document.title = `归档 - ${siteConfig.title}`;
+	}, []);
 
 	function yearOf(dateString: string) { return new Date(dateString).getFullYear(); }
 	function monthOf(dateString: string) {
@@ -31,43 +35,39 @@ export default function ArchivesPage() {
 	}, [posts]);
 
 	return (
-		<>
-			<title>归档 - {siteConfig.title}</title>
-			<meta name="description" content="文章归档" />
-			<main className="pm-main">
-				<header className="pm-page-header">
-					<h1>归档</h1>
-				</header>
-				{posts.length === 0 ? (
-					<div className="pm-empty">暂无文章</div>
-				) : (
-					<div className="pm-archive-posts">
-						{groups.map(group => (
-							<section key={group.year} className="pm-archive-year">
-								<h2>
-									{group.year}
-									<sup className="pm-archive-count">{group.count}</sup>
-								</h2>
-								{group.months.map(m => (
-									<div key={m.month} className="pm-archive-month">
-										<h3 className="pm-archive-month-header">{m.month}</h3>
-										<div className="pm-archive-entries">
-											{m.posts.map(post => (
-												<article key={post.slug} className="pm-archive-entry">
-													<div className="pm-archive-meta">{dayOf(post.metadata.published)}</div>
-													<h4 className="pm-archive-entry-title">
-														<a href={`/posts/${post.slug}`}>{post.metadata.title}</a>
-													</h4>
-												</article>
-											))}
-										</div>
+		<main className="pm-main">
+			<header className="pm-page-header">
+				<h1>归档</h1>
+			</header>
+			{posts.length === 0 ? (
+				<div className="pm-empty">暂无文章</div>
+			) : (
+				<div className="pm-archive-posts">
+					{groups.map(group => (
+						<section key={group.year} className="pm-archive-year">
+							<h2>
+								{group.year}
+								<sup className="pm-archive-count">{group.count}</sup>
+							</h2>
+							{group.months.map(m => (
+								<div key={m.month} className="pm-archive-month">
+									<h3 className="pm-archive-month-header">{m.month}</h3>
+									<div className="pm-archive-entries">
+										{m.posts.map(post => (
+											<article key={post.slug} className="pm-archive-entry">
+												<div className="pm-archive-meta">{dayOf(post.metadata.published)}</div>
+												<h4 className="pm-archive-entry-title">
+													<a href={`/posts/${post.slug}`}>{post.metadata.title}</a>
+												</h4>
+											</article>
+										))}
 									</div>
-								))}
-							</section>
-						))}
-					</div>
-				)}
-			</main>
-		</>
+								</div>
+							))}
+						</section>
+					))}
+				</div>
+			)}
+		</main>
 	);
 }

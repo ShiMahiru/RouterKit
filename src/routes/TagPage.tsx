@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams, Navigate } from 'react-router';
 import { siteConfig } from '../config';
 import PaperPostList from '$lib/components/PaperPostList';
@@ -11,18 +11,20 @@ export default function TagPage() {
 	const allPosts = useMemo(() => getDisplayPosts(), []);
 	const posts = useMemo(() => getPostsByTag(decodedTag, allPosts), [decodedTag, allPosts]);
 
+	useEffect(() => {
+		if (posts.length > 0) {
+			document.title = `${decodedTag} - ${siteConfig.title}`;
+		}
+	}, [decodedTag, posts.length]);
+
 	if (posts.length === 0) return <Navigate to="/tags" replace />;
 
 	return (
-		<>
-			<title>{decodedTag} - {siteConfig.title}</title>
-			<meta name="description" content={`标签：${decodedTag}`} />
-			<main className="pm-main pm-list-main">
-				<header className="pm-page-header">
-					<h1>{decodedTag}</h1>
-				</header>
-				<PaperPostList posts={posts} />
-			</main>
-		</>
+		<main className="pm-main pm-list-main">
+			<header className="pm-page-header">
+				<h1>{decodedTag}</h1>
+			</header>
+			<PaperPostList posts={posts} />
+		</main>
 	);
 }
