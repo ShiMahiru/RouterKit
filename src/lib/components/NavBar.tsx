@@ -120,7 +120,7 @@ export default function NavBar() {
 								<li className="pm-search-empty">未找到匹配的文章</li>
 							) : (
 								results.slice(0, 8).map(post => (
-									<li key={post.slug} style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 15px', background: 'var(--pm-entry)', border: '1px solid var(--pm-border)', borderRadius: 'var(--pm-radius)', fontWeight: 500, marginBottom: 6 }}>
+									<li key={post.slug} style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 15px', background: 'var(--pm-code-bg)', border: '1px solid var(--pm-border)', borderRadius: 'var(--pm-radius)', fontWeight: 500, marginBottom: 6 }}>
 										<a className="pm-entry-link" href={`/posts/${post.slug}`} aria-label={`文章链接：${post.metadata.title}`} style={{ position: 'absolute', inset: 0, borderRadius: 'var(--pm-radius)' }} onClick={() => setSearchOpen(false)}></a>
 										<div><h2 style={{ margin: 0, fontSize: 20, lineHeight: 1.3 }}>{post.metadata.title}</h2></div>
 										<span>»</span>
