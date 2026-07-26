@@ -132,14 +132,25 @@ rssXml = rssXml.replace(/\s*<lastBuildDate>[^<]*<\/lastBuildDate>\n?/g, '');
 
 // Remove <pubDate> from items
 rssXml = rssXml.replace(/\s*<pubDate>[^<]*<\/pubDate>\n?/g, '');
-	// Fix guid isPermaLink to true
-	rssXml = rssXml.replace(/<guid isPermaLink="false">/g, '<guid isPermaLink="true">');
-	// Remove auto-generated enclosures (feed library extracts from content HTML)
-	rssXml = rssXml.replace(/\s*<enclosure[^>]+\/>\n?/g, '');
+// Keep guid but strip isPermaLink attribute
+rssXml = rssXml.replace(/<guid isPermaLink="true">/g, '<guid>');
+rssXml = rssXml.replace(/<guid isPermaLink="false">/g, '<guid>');
+// Remove auto-generated enclosures
+rssXml = rssXml.replace(/\s*<enclosure[^>]+\/>\n?/g, '');
 
-// Inject managingEditor + webMaster after atom:link
+// Remove <atom:link> tag
+rssXml = rssXml.replace(/\s*<atom:link[^>]+\/>\n?/g, '');
+
+// Remove all <link> tags, then re-add channel <link>
+rssXml = rssXml.replace(/\s*<link>[^<]*<\/link>\n?/g, '');
 rssXml = rssXml.replace(
-	/(<atom:link[^>]+\/>)/,
+	/(<description>[^<]*<\/description>)/,
+	'$1\n        <link>' + SITE_URL + '</link>'
+);
+
+// Inject managingEditor + webMaster after description + link
+rssXml = rssXml.replace(
+	/(<description>[^<]*<\/description>)/,
 	'$1\n        <managingEditor>' + SITE_EMAIL + ' (Yuln)</managingEditor>\n        <webMaster>' + SITE_EMAIL + ' (Yuln)</webMaster>'
 );
 
