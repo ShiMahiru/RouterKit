@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { siteConfig } from '../../config';
 import { getDisplayPosts, createPostSearchText } from '$lib/utils/posts';
 
@@ -22,18 +22,13 @@ export default function NavBar() {
 	const [, forceUpdate] = useState(0);
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [query, setQuery] = useState('');
-	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		applyTheme(preferredTheme());
 	}, []);
 
 	useEffect(() => {
-		if (searchOpen) {
-			setTimeout(() => inputRef.current?.focus(), 100);
-		} else {
-			setQuery('');
-		}
+		if (!searchOpen) setQuery('');
 	}, [searchOpen]);
 
 	useEffect(() => {
@@ -110,7 +105,6 @@ export default function NavBar() {
 								<circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
 							</svg>
 							<input
-								ref={inputRef}
 								value={query}
 								onChange={(e) => setQuery(e.target.value)}
 								type="search"
