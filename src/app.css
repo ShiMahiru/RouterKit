@@ -205,23 +205,19 @@ body button {
 	font-size: 14px;
 	color: var(--pm-primary);
 	background: var(--pm-code-bg);
-	border: 1px solid var(--pm-border);
+	border: 2px solid var(--pm-tertiary);
 	border-radius: var(--pm-radius);
 	outline: none;
 	font-family: inherit;
-	transition: width 0.2s ease, border-color 0.2s ease;
-}
-
-.pm-nav-search input:focus {
-	width: 5em;
-	border-color: var(--pm-tertiary);
 }
 
 .pm-nav-search-results {
 	position: absolute;
 	top: 100%;
-	left: 0;
-	right: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 400px;
+	max-width: 90vw;
 	margin-top: 6px;
 	padding: 4px;
 	list-style: none;
