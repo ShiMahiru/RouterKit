@@ -10,12 +10,12 @@ import crypto from 'crypto';
 const md = new MarkdownIt({ html: true, linkify: true });
 
 const SITE_URL = process.env.PUBLIC_SITE_URL || 'https://2x.nz';
-const SITE_TITLE = '博客 | 二叉树树';
-const SITE_DESC = '《二叉树树》是一个专注于 IT / 互联网技术分享与实践的个人技术博客。';
+const SITE_TITLE = '博客 | Yuln';
+const SITE_DESC = '《Yuln》是一个专注于 IT / 互联网技术分享与实践的个人技术博客。';
 const SITE_LANGUAGE = 'zh-CN';
 const SITE_ICON = 'https://q2.qlogo.cn/headimg_dl?dst_uin=242531778&spec=0';
 const SITE_EMAIL = '242531778@qq.com';
-const SITE_AUTHOR = '二叉树树';
+const SITE_AUTHOR = 'Yuln';
 
 // ---- Parse frontmatter ----
 function parseFrontmatter(raw) {
@@ -92,8 +92,12 @@ const feed = new Feed({
 // Add managingEditor / webMaster (feed library doesn't have these, inject after)
 let rssXml = feed.rss2();
 rssXml = rssXml.replace(
+		'<rss version="2.0"',
+		'<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"'
+	);
+rssXml = rssXml.replace(
 	'</channel>',
-	`\t<managingEditor>${SITE_EMAIL} (Yuln)</managingEditor>\n\t<webMaster>${SITE_EMAIL} (Yuln)</webMaster>\n\t</channel>`
+	`        <managingEditor>${SITE_EMAIL} (Yuln)</managingEditor>\n        <webMaster>${SITE_EMAIL} (Yuln)</webMaster>\n        </channel>`
 );
 
 for (const post of publishedPosts) {
