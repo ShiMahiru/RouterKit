@@ -90,14 +90,21 @@ for (const post of publishedPosts) {
 	const safe = (s) => (typeof s === 'string' ? s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '') : '');
 	const safeTitle = safe(post.metadata.title) || post.slug;
 	const safeDesc = safe(post.metadata.description);
+	const safeContent = safe(post.content) || safeDesc || safeTitle;
 	const pubDate = new Date(post.metadata.published);
 	const safeDate = isNaN(pubDate.getTime()) ? new Date() : pubDate;
+
+	// 渲染 Markdown 为 HTML，修复相对图片路径
+	let html = md.render(safeContent);
+	html = html.replace(/(<img[^>]+src=")(?!\/|https?:\/\/)([^"]+)(")/g,
+		(_, b, s, a) => `${b}${SITE_URL}/posts/${post.slug}/${s}${a}`);
 
 	feed.addItem({
 		title: safeTitle,
 		id: `${SITE_URL}/posts/${post.slug}/`,
 		link: `${SITE_URL}/posts/${post.slug}/`,
 		description: safeDesc || safeTitle,
+		content: html,
 		date: safeDate,
 		categories: []   // 强制不输出 <category> 标签
 	});
