@@ -197,9 +197,9 @@ body button {
 
 
 .pm-search-dropdown {
-	background: var(--pm-theme);
+	background: var(--pm-code-bg);
 	border-bottom: 1px solid var(--pm-border);
-	padding: 8px 0 12px;
+	padding: 4px 0 10px;
 	animation: pm-search-dropdown 0.2s ease;
 }
 
