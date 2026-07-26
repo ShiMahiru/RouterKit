@@ -195,6 +195,18 @@ body button {
 	overflow-x: hidden;
 }
 
+
+.pm-search-dropdown {
+	background: var(--pm-theme);
+	border-bottom: 1px solid var(--pm-border);
+	padding: 12px 0 16px;
+	animation: pm-search-dropdown 0.2s ease;
+}
+
+@keyframes pm-search-dropdown {
+	from { opacity: 0; transform: translateY(-8px); }
+	to { opacity: 1; transform: translateY(0); }
+}
 .pm-post-single,
 .pm-post-content {
 	min-width: 0;
