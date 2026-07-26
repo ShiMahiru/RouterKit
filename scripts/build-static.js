@@ -141,17 +141,14 @@ rssXml = rssXml.replace(/\s*<enclosure[^>]+\/>\n?/g, '');
 // Remove <atom:link> tag
 rssXml = rssXml.replace(/\s*<atom:link[^>]+\/>\n?/g, '');
 
-// Remove all <link> tags, then re-add channel <link>
+// Remove all <link> and <guid> tags
 rssXml = rssXml.replace(/\s*<link>[^<]*<\/link>\n?/g, '');
-rssXml = rssXml.replace(
-	/(<description>[^<]*<\/description>)/,
-	'$1\n        <link>' + SITE_URL + '</link>'
-);
+rssXml = rssXml.replace(/\s*<guid[^>]*>[^<]*<\/guid>\n?/g, '');
 
-// Inject managingEditor + webMaster after description + link
+// Inject managingEditor + webMaster after description
 rssXml = rssXml.replace(
-	/(<description>[^<]*<\/description>)/,
-	'$1\n        <managingEditor>' + SITE_EMAIL + ' (Yuln)</managingEditor>\n        <webMaster>' + SITE_EMAIL + ' (Yuln)</webMaster>'
+    /(<description>[^<]*<\/description>)/,
+    '$1\n        <managingEditor>' + SITE_EMAIL + ' (Yuln)</managingEditor>\n        <webMaster>' + SITE_EMAIL + ' (Yuln)</webMaster>'
 );
 
 const buildDir = path.join(projectRoot, 'build');
