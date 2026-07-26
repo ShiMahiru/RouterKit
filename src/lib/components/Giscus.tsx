@@ -13,10 +13,10 @@ function resolvedTheme() {
 export default function Giscus() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const attemptsRef = useRef(0);
-	const retryTimerRef = useRef<ReturnType<typeof setTimeout>>();
-	const watchdogTimerRef = useRef<ReturnType<typeof setTimeout>>();
-	const observerRef = useRef<MutationObserver>();
-	const mediaQueryRef = useRef<MediaQueryList>();
+	const retryTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+	const watchdogTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+	const observerRef = useRef<MutationObserver>(undefined);
+	const mediaQueryRef = useRef<MediaQueryList>(undefined);
 
 	function updateTheme() {
 		const iframe = containerRef.current?.querySelector<HTMLIFrameElement>('iframe.giscus-frame');

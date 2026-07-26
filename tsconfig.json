@@ -19,7 +19,8 @@
 		"paths": {
 			"$lib/*": ["./src/lib/*"]
 		},
-		"baseUrl": "."
+		"baseUrl": ".",
+		"ignoreDeprecations": "6.0"
 	},
 	"include": ["src"],
 	"exclude": ["build", "node_modules"]

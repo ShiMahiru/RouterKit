@@ -26,8 +26,8 @@ function slugify(text: string): string {
 export default function PostToc({ container, trigger }: Props) {
 	const [headings, setHeadings] = useState<Heading[]>([]);
 	const [activeId, setActiveId] = useState('');
-	const observerRef = useRef<IntersectionObserver>();
-	const retryTimerRef = useRef<ReturnType<typeof setTimeout>>();
+	const observerRef = useRef<IntersectionObserver>(undefined);
+	const retryTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
 	const minLevel = useMemo(
 		() => headings.length ? Math.min(...headings.map(h => h.level)) : 1,

@@ -1,6 +1,6 @@
 export const siteConfig = {
-	title: '博客 | 二叉树树',
-	headerTitle: '二叉树树',
+	title: '博客 | Yuln',
+	headerTitle: 'Yuln',
 	icon: 'https://q2.qlogo.cn/headimg_dl?dst_uin=242531778&spec=0',
 	giscus: {
 		src: 'https://giscus.app/client.js',
