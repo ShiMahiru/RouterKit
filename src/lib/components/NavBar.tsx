@@ -48,34 +48,6 @@ export default function NavBar() {
 					<a href="/" title={siteConfig.headerTitle}>{siteConfig.headerTitle}</a>
 				</div>
 
-				<div className="pm-nav-search">
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pm-nav-search-icon">
-						<circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-					</svg>
-					<input
-						value={query}
-						onChange={(e) => setQuery(e.target.value)}
-						type="search"
-						placeholder="搜索..."
-						aria-label="搜索"
-					/>
-					{query && (
-						<ul className="pm-nav-search-results">
-							{results.length === 0 ? (
-								<li className="pm-search-empty">无结果</li>
-							) : (
-								results.slice(0, 8).map(post => (
-									<li key={post.slug}>
-										<a href={`/posts/${post.slug}`} onClick={() => setQuery('')}>
-											{post.metadata.title}
-										</a>
-									</li>
-								))
-							)}
-						</ul>
-					)}
-				</div>
-
 				<ul id="menu" className="pm-menu">
 					<li>
 						<button id="theme-toggle" className="pm-theme-toggle" title="切换主题" aria-label="切换主题" onClick={toggleTheme}>
@@ -94,6 +66,32 @@ export default function NavBar() {
 					{navItems.map(item => (
 						<li key={item.href}><a href={item.href} title={item.label}><span>{item.label}</span></a></li>
 					))}
+					<li>
+						<div className="pm-nav-search">
+							<input
+								value={query}
+								onChange={(e) => setQuery(e.target.value)}
+								type="search"
+								placeholder="搜索"
+								aria-label="搜索"
+							/>
+							{query && (
+								<ul className="pm-nav-search-results">
+									{results.length === 0 ? (
+										<li className="pm-search-empty">无结果</li>
+									) : (
+										results.slice(0, 8).map(post => (
+											<li key={post.slug}>
+												<a href={`/posts/${post.slug}`} onClick={() => setQuery('')}>
+													{post.metadata.title}
+												</a>
+											</li>
+										))
+									)}
+								</ul>
+							)}
+						</div>
+					</li>
 				</ul>
 			</nav>
 		</header>

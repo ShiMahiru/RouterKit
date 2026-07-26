@@ -200,7 +200,7 @@ body button {
 }
 
 .pm-nav-search input {
-	width: 120px;
+	width: 5em;
 	padding: 4px 8px;
 	font-size: 14px;
 	color: var(--pm-primary);
@@ -213,7 +213,7 @@ body button {
 }
 
 .pm-nav-search input:focus {
-	width: 180px;
+	width: 5em;
 	border-color: var(--pm-tertiary);
 }
 
