@@ -3,8 +3,7 @@ import path from 'path';
 
 /**
  * Dev 模式下让 /posts/{slug}/img/{filename} 直接从当前文章目录读取。
- * 生产构建的 AVIF 转换由 scripts/post-images.js 在 vite build 之后单独执行
- * （因为 adapter-static 会在 closeBundle 之后清理/重建 build 目录）。
+ * 生产构建由 scripts/build-static.js 在 vite build 之后执行。
  */
 export function postImagesPlugin() {
   return {
