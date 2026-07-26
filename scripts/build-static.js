@@ -14,7 +14,7 @@ const SITE_TITLE = '博客 | 二叉树树';
 const SITE_DESC = '《二叉树树》是一个专注于 IT / 互联网技术分享与实践的个人技术博客。';
 const SITE_LANGUAGE = 'zh-CN';
 const SITE_ICON = 'https://q2.qlogo.cn/headimg_dl?dst_uin=242531778&spec=0';
-const SITE_EMAIL = 'acofork@qq.com';
+const SITE_EMAIL = '242531778@qq.com';
 const SITE_AUTHOR = '二叉树树';
 
 // ---- Parse frontmatter ----
@@ -93,7 +93,7 @@ const feed = new Feed({
 let rssXml = feed.rss2();
 rssXml = rssXml.replace(
 	'</channel>',
-	`\t<managingEditor>${SITE_EMAIL} (${SITE_AUTHOR})</managingEditor>\n\t<webMaster>${SITE_EMAIL} (${SITE_AUTHOR})</webMaster>\n\t</channel>`
+	`\t<managingEditor>${SITE_EMAIL} (Yuln)</managingEditor>\n\t<webMaster>${SITE_EMAIL} (Yuln)</webMaster>\n\t</channel>`
 );
 
 for (const post of publishedPosts) {
