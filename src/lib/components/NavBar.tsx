@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { siteConfig } from '../../config';
 import { getDisplayPosts, createPostSearchText } from '$lib/utils/posts';
-import type { Post } from '$lib/types/post';
 
 const navItems = [
 	{ label: '归档', href: '/archives' },
@@ -32,10 +31,22 @@ export default function NavBar() {
 	useEffect(() => {
 		if (searchOpen) {
 			inputRef.current?.focus();
+			document.body.style.overflow = 'hidden';
 		} else {
 			setQuery('');
+			document.body.style.overflow = '';
 		}
+		return () => { document.body.style.overflow = ''; };
 	}, [searchOpen]);
+
+	useEffect(() => {
+		function onKey(e: KeyboardEvent) {
+			if (e.key === 'Escape') setSearchOpen(false);
+			if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); setSearchOpen(true); }
+		}
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	}, []);
 
 	const toggleTheme = useCallback(() => {
 		const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
@@ -82,53 +93,59 @@ export default function NavBar() {
 								</svg>
 							</button>
 						</li>
-						<li>
-							<button
-								className="pm-theme-toggle"
-								title="搜索"
-								aria-label="搜索"
-								onClick={() => setSearchOpen(o => !o)}
-							>
-								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-									<circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-								</svg>
-							</button>
-						</li>
 						{navItems.map(item => (
 							<li key={item.href}><a href={item.href} title={item.label}><span>{item.label}</span></a></li>
 						))}
+						<li>
+							<button className="pm-search-btn" title="搜索 (Ctrl+K)" aria-label="搜索" onClick={() => setSearchOpen(true)}>
+								<span>搜索</span>
+							</button>
+						</li>
 					</ul>
 				</nav>
 			</header>
 
 			{searchOpen && (
-				<div className="pm-search-dropdown">
-					<div className="pm-searchbox">
-						<input
-							ref={inputRef}
-							value={query}
-							onChange={(e) => setQuery(e.target.value)}
-							type="search"
-							placeholder="输入关键词搜索文章..."
-							aria-label="搜索文章"
-						/>
+				<div className="pm-search-overlay" onClick={(e) => { if (e.target === e.currentTarget) setSearchOpen(false); }}>
+					<div className="pm-search-modal">
+						<div className="pm-searchbox">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pm-search-icon">
+								<circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+							</svg>
+							<input
+								ref={inputRef}
+								value={query}
+								onChange={(e) => setQuery(e.target.value)}
+								type="search"
+								placeholder="搜索文章..."
+								aria-label="搜索文章"
+							/>
+							<button className="pm-search-close" onClick={() => setSearchOpen(false)} aria-label="关闭搜索">
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+									<line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+								</svg>
+							</button>
+						</div>
+
+						{query.trim() && (
+							<ul className="pm-search-results">
+								{results.length === 0 ? (
+									<li className="pm-search-empty">未找到匹配的文章</li>
+								) : (
+									results.slice(0, 10).map(post => (
+										<li key={post.slug}>
+											<a href={`/posts/${post.slug}`} onClick={() => setSearchOpen(false)}>
+												<span className="pm-search-title">{post.metadata.title}</span>
+												{post.metadata.description && (
+													<span className="pm-search-desc">{post.metadata.description}</span>
+												)}
+											</a>
+										</li>
+									))
+								)}
+							</ul>
+						)}
 					</div>
-					{query.trim() && (
-						<ul className="pm-search-results"
-							style={{ maxWidth: 'calc(var(--pm-nav-width) + var(--pm-gap) * 2)', margin: '12px auto 0', padding: '0 var(--pm-gap)', listStyle: 'none' }}>
-							{results.length === 0 ? (
-								<li className="pm-search-empty">未找到匹配的文章</li>
-							) : (
-								results.slice(0, 8).map(post => (
-									<li key={post.slug} style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 15px', background: 'var(--pm-code-bg)', border: '1px solid var(--pm-border)', borderRadius: 'var(--pm-radius)', fontWeight: 500, marginBottom: 6 }}>
-										<a className="pm-entry-link" href={`/posts/${post.slug}`} aria-label={`文章链接：${post.metadata.title}`} style={{ position: 'absolute', inset: 0, borderRadius: 'var(--pm-radius)' }} onClick={() => setSearchOpen(false)}></a>
-										<div><h2 style={{ margin: 0, fontSize: 20, lineHeight: 1.3 }}>{post.metadata.title}</h2></div>
-										<span>»</span>
-									</li>
-								))
-							)}
-						</ul>
-					)}
 				</div>
 			)}
 		</>
