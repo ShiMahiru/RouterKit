@@ -1,21 +1,14 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router';
 import type { Post } from '$lib/types/post';
 import { countPostWords, getPostReadTime } from '$lib/utils/posts';
+import { formatDate } from '$lib/utils/date';
 
 interface Props {
 	posts: Post[];
 }
 
 const POSTS_PER_PAGE = 10;
-
-function formatDate(dateString: string) {
-	const date = new Date(dateString);
-	return date.toLocaleDateString('zh-CN', {
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric'
-	});
-}
 
 export default function PaperPostList({ posts }: Props) {
 	const [currentPage, setCurrentPage] = useState(1);
@@ -55,7 +48,7 @@ export default function PaperPostList({ posts }: Props) {
 						<span>{countPostWords(post)} 字</span>
 					</footer>
 
-					<a className="pm-entry-link" aria-label={`文章链接：${post.metadata.title}`} href={`/posts/${post.slug}`}></a>
+					<Link className="pm-entry-link" aria-label={`文章链接：${post.metadata.title}`} to={`/posts/${post.slug}`}></Link>
 				</article>
 			))}
 

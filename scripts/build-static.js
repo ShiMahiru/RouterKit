@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 import os from 'os';
 import crypto from 'crypto';
+import { parseFrontmatter } from './lib/frontmatter.js';
 
 const md = new MarkdownIt({ html: true, linkify: true });
 
@@ -17,28 +18,6 @@ const SITE_LANGUAGE = 'zh-CN';
 const SITE_ICON = 'https://q2.qlogo.cn/headimg_dl?dst_uin=242531778&spec=0';
 const SITE_EMAIL = '242531778@qq.com';
 const SITE_AUTHOR = 'Yuln';
-
-// ---- Parse frontmatter ----
-function parseFrontmatter(raw) {
-	const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
-	if (!match) return { metadata: {}, content: raw };
-	const body = raw.slice(match[0].length).trim();
-	const meta = {};
-	for (const line of match[1].split('\n')) {
-		const kv = line.match(/^(\w[\w-]*):\s*(.*)$/);
-		if (!kv) continue;
-		const key = kv[1].trim();
-		let val = kv[2].trim();
-		if (val === 'true' || val === 'false') { meta[key] = val === 'true'; continue; }
-		if (val.startsWith('[') && val.endsWith(']')) {
-			meta[key] = val.slice(1, -1).split(',').map(s => s.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
-			continue;
-		}
-		if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) val = val.slice(1, -1);
-		meta[key] = val;
-	}
-	return { metadata: meta, content: body };
-}
 
 // ---- Load posts ----
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -164,7 +143,7 @@ const staticPages = [
 	{ url: '/search', priority: '0.5', changefreq: 'monthly' }
 ];
 
-const postPages = posts.map(p => ({
+const postPages = publishedPosts.map(p => ({
 	url: `/posts/${p.slug}/`,
 	priority: '0.8',
 	changefreq: 'weekly',

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router';
 import { siteConfig } from '../config';
 import { getDisplayPosts, createPostSearchText } from '$lib/utils/posts';
 
@@ -41,11 +42,11 @@ export default function SearchPage() {
 				) : (
 					results.map(post => (
 						<li key={post.slug}>
-							<a
+							<Link
 								className="pm-entry-link"
-								href={`/posts/${post.slug}`}
+								to={`/posts/${post.slug}`}
 								aria-label={`文章链接：${post.metadata.title}`}
-							></a>
+							></Link>
 							<div>
 								<h2>{post.metadata.title}</h2>
 								<p>{post.metadata.description}</p>

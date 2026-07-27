@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { Link } from 'react-router';
 import { siteConfig } from '../config';
 import { getAllTags, getDisplayPosts } from '$lib/utils/posts';
 
@@ -21,9 +22,9 @@ export default function TagsPage() {
 				<ul className="pm-terms-tags">
 					{tags.map(tag => (
 						<li key={tag.name}>
-							<a href={`/tags/${encodeURIComponent(tag.name)}`}>
+							<Link to={`/tags/${encodeURIComponent(tag.name)}`}>
 								{tag.name} <sup>{tag.count}</sup>
-							</a>
+							</Link>
 						</li>
 					))}
 				</ul>

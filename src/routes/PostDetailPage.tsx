@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { useParams, Navigate, useSearchParams } from 'react-router';
+import { useParams, Navigate, useSearchParams, Link } from 'react-router';
 import { siteConfig } from '../config';
 import ImageViewer from '$lib/components/ImageViewer';
 import Giscus from '$lib/components/Giscus';
@@ -8,18 +8,10 @@ import { highlightCodeBlocksIn } from '$lib/utils/highlight';
 import { renderMermaidIn } from '$lib/utils/mermaid';
 import { countPostWords, getPostReadTime, getPostBySlug } from '$lib/utils/posts';
 import { resolvePostAssetPath } from '$lib/utils/markdown';
+import { formatDate } from '$lib/utils/date';
 import MarkdownIt from 'markdown-it';
 
 const md = new MarkdownIt({ html: true, linkify: true, breaks: true });
-
-function formatDate(dateString: string) {
-	const date = new Date(dateString);
-	return date.toLocaleDateString('zh-CN', {
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric'
-	});
-}
 
 function parseQueryTerms(query: string): string[] {
 	const terms: string[] = [];
@@ -56,6 +48,8 @@ export default function PostDetailPage() {
 	useEffect(() => {
 		if (!post || !slug) return;
 		let html = md.render(post.content);
+		// 移除正文中第一个 h1，因为组件 header 已显示标题
+		html = html.replace(/<h1[^>]*>[\s\S]*?<\/h1>/, '');
 		html = html.replace(
 			/(<img[^>]+src=")(?!\/|https?:\/\/)([^"]+)(")/g,
 			(_m: string, before: string, src: string, after: string) =>
@@ -102,12 +96,12 @@ export default function PostDetailPage() {
 				<article className="pm-post-single">
 					<header className="pm-post-header">
 						<nav className="pm-breadcrumbs" aria-label="Breadcrumb">
-							<a href="/">主页</a>
+							<Link to="/">主页</Link>
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
 								strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
 								<polyline points="9 18 15 12 9 6" />
 							</svg>
-							<a href="/posts">文章</a>
+							<Link to="/posts">文章</Link>
 						</nav>
 						<h1 className="pm-post-title pm-entry-hint-parent">{post.metadata.title}</h1>
 						<div className="pm-post-description">{post.metadata.description}</div>
@@ -138,10 +132,10 @@ export default function PostDetailPage() {
 
 					<footer className="pm-post-footer">
 						<nav className="pm-paginav">
-							<a className="pm-prev" href="/posts">
+							<Link className="pm-prev" to="/posts">
 								<span className="title">« 返回</span>
 								<span>文章列表</span>
-							</a>
+							</Link>
 						</nav>
 					</footer>
 

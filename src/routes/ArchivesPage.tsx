@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { Link } from 'react-router';
 import { siteConfig } from '../config';
 import { getDisplayPosts } from '$lib/utils/posts';
 
@@ -57,7 +58,7 @@ export default function ArchivesPage() {
 											<article key={post.slug} className="pm-archive-entry">
 												<div className="pm-archive-meta">{dayOf(post.metadata.published)}</div>
 												<h4 className="pm-archive-entry-title">
-													<a href={`/posts/${post.slug}`}>{post.metadata.title}</a>
+													<Link to={`/posts/${post.slug}`}>{post.metadata.title}</Link>
 												</h4>
 											</article>
 										))}

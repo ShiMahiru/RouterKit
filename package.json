@@ -1,5 +1,5 @@
 {
-	"name": "svaf",
+	"name": "vitkit-blog",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -16,7 +16,7 @@
 		"dev": "vite",
 		"build": "vite build && node scripts/build-static.js",
 		"preview": "vite preview",
-		"deploy:workers": "npm run build && npx --yes wrangler deploy",
+		"deploy:workers": "pnpm run build && npx --yes wrangler deploy",
 		"new-post": "node scripts/new-post.js",
 		"check": "tsc --noEmit",
 		"check:watch": "tsc --noEmit --watch"

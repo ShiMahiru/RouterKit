@@ -1,38 +1,25 @@
 import type { Post, PostMetadata } from '$lib/types/post';
 import { resolvePostAssetPath } from '$lib/utils/markdown';
 
-// Parse frontmatter from raw markdown
-function parseFrontmatter(raw: string): { metadata: Partial<PostMetadata>; content: string } {
+function parseFrontmatter(raw: string): { metadata: Record<string, unknown>; content: string } {
 	const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
 	if (!match) return { metadata: {}, content: raw };
-
 	const body = raw.slice(match[0].length).trim();
 	const meta: Record<string, unknown> = {};
-
 	for (const line of match[1].split('\n')) {
 		const kv = line.match(/^(\w[\w-]*):\s*(.*)$/);
 		if (!kv) continue;
 		const key = kv[1].trim();
 		let val = kv[2].trim();
-
-		// Parse boolean
-		if (val === 'true' || val === 'false') {
-			meta[key] = val === 'true';
-			continue;
-		}
-		// Parse array: [a, b]
+		if (val === 'true' || val === 'false') { meta[key] = val === 'true'; continue; }
 		if (val.startsWith('[') && val.endsWith(']')) {
 			meta[key] = val.slice(1, -1).split(',').map(s => s.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
 			continue;
 		}
-		// Remove quotes
-		if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-			val = val.slice(1, -1);
-		}
+		if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) val = val.slice(1, -1);
 		meta[key] = val;
 	}
-
-	return { metadata: meta as Partial<PostMetadata>, content: body };
+	return { metadata: meta, content: body };
 }
 
 // Load raw markdown files

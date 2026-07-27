@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router';
 import { siteConfig } from '../../config';
 
 const navItems = [
-	{ label: '归档', href: '/archives' },
 	{ label: '搜索', href: '/search' },
+	{ label: '归档', href: '/archives' },
 	{ label: 'RSS', href: '/rss.xml' }
 ] as const;
 
@@ -19,25 +20,36 @@ function applyTheme(theme: 'light' | 'dark') {
 }
 
 export default function NavBar() {
-	const [, forceUpdate] = useState(0);
+	const [theme, setTheme] = useState<'light' | 'dark'>(preferredTheme);
 
 	useEffect(() => {
-		applyTheme(preferredTheme());
+		applyTheme(theme);
+	}, [theme]);
+
+	useEffect(() => {
+		const mq = window.matchMedia('(prefers-color-scheme: dark)');
+		const handler = (e: MediaQueryListEvent) => {
+			if (!localStorage.getItem('pref-theme')) {
+				setTheme(e.matches ? 'dark' : 'light');
+			}
+		};
+		mq.addEventListener('change', handler);
+		return () => mq.removeEventListener('change', handler);
 	}, []);
 
 	const toggleTheme = useCallback(() => {
-		const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
-		const next = current === 'dark' ? 'light' : 'dark';
-		localStorage.setItem('pref-theme', next);
-		applyTheme(next);
-		forceUpdate(n => n + 1);
+		setTheme(current => {
+			const next = current === 'dark' ? 'light' : 'dark';
+			localStorage.setItem('pref-theme', next);
+			return next;
+		});
 	}, []);
 
 	return (
 		<header className="pm-header">
 			<nav className="pm-header-nav">
 				<div className="pm-logo">
-					<a href="/" title={siteConfig.headerTitle}>{siteConfig.headerTitle}</a>
+					<Link to="/" title={siteConfig.headerTitle}>{siteConfig.headerTitle}</Link>
 				</div>
 
 				<ul id="menu" className="pm-menu">
@@ -78,7 +90,13 @@ export default function NavBar() {
 						</button>
 					</li>
 					{navItems.map(item => (
-						<li key={item.href}><a href={item.href} title={item.label}><span>{item.label}</span></a></li>
+						<li key={item.href}>
+							{item.href.startsWith('/') && !item.href.endsWith('.xml') ? (
+								<Link to={item.href} title={item.label}><span>{item.label}</span></Link>
+							) : (
+								<a href={item.href} title={item.label}><span>{item.label}</span></a>
+							)}
+						</li>
 					))}
 				</ul>
 			</nav>
