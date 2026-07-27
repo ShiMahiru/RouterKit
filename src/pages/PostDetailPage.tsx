@@ -1,83 +1,17 @@
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useParams, Navigate, useSearchParams, Link } from 'react-router';
+import { Helmet } from 'react-helmet-async';
+import DOMPurify from 'dompurify';
 import { siteConfig } from '@/config';
-import ImageViewer from '@/components/ImageViewer';
-import Giscus from '@/components/Giscus';
-import PostToc from '@/components/PostToc';
+import ArticleHeader from '@/components/article/ArticleHeader';
+import ImageViewer from '@/components/article/ImageViewer';
+import Giscus from '@/components/comment/Giscus';
+import PostToc from '@/components/article/PostToc';
+import SearchHighlight, { parseQueryTerms } from '@/components/search/SearchHighlight';
 import { highlightCodeBlocksIn } from '@/utils/highlight';
 import { renderMermaidIn } from '@/utils/mermaid';
-import { countPostWords, getPostBySlug } from '@/utils/posts';
+import { getPostBySlug } from '@/utils/posts';
 import { resolvePostAssetPath } from '@/utils/markdown';
-import { formatDate } from '@/utils/date';
-import MarkdownIt from 'markdown-it';
-
-const md = new MarkdownIt({ html: true, linkify: true, breaks: true });
-
-function parseQueryTerms(query: string): string[] {
-	const terms: string[] = [];
-	const re = /"([^"]+)"|(\S+)/g;
-	let m: RegExpExecArray | null;
-	while ((m = re.exec(query)) !== null) {
-		const t = (m[1] ?? m[2] ?? '').trim().toLowerCase();
-		if (t) terms.push(t);
-	}
-	return terms;
-}
-
-function highlightSearchTermsIn(container: HTMLElement, terms: string[]) {
-	container.querySelectorAll('mark.search-highlight').forEach(mark => {
-		mark.replaceWith(document.createTextNode(mark.textContent || ''));
-	});
-
-	const escaped = terms
-		.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-		.sort((a, b) => b.length - a.length);
-	const regex = new RegExp(`(${escaped.join('|')})`, 'gi');
-
-	const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
-		acceptNode: (node) => {
-			const parent = node.parentElement;
-			if (!parent) return NodeFilter.FILTER_REJECT;
-			if (
-				parent.tagName === 'MARK' ||
-				parent.tagName === 'SCRIPT' ||
-				parent.tagName === 'STYLE' ||
-				parent.closest('pre, code')
-			) {
-				return NodeFilter.FILTER_REJECT;
-			}
-			return NodeFilter.FILTER_ACCEPT;
-		}
-	});
-
-	const textNodes: Text[] = [];
-	let node: Node | null;
-	while ((node = walker.nextNode())) textNodes.push(node as Text);
-
-	for (const textNode of textNodes) {
-		const text = textNode.textContent || '';
-		if (!regex.test(text)) continue;
-		regex.lastIndex = 0;
-
-		const frag = document.createDocumentFragment();
-		let lastIdx = 0;
-		let match: RegExpExecArray | null;
-		while ((match = regex.exec(text)) !== null) {
-			if (match.index > lastIdx) {
-				frag.appendChild(document.createTextNode(text.slice(lastIdx, match.index)));
-			}
-			const mark = document.createElement('mark');
-			mark.className = 'search-highlight';
-			mark.textContent = match[0];
-			frag.appendChild(mark);
-			lastIdx = regex.lastIndex;
-		}
-		if (lastIdx < text.length) {
-			frag.appendChild(document.createTextNode(text.slice(lastIdx)));
-		}
-		textNode.replaceWith(frag);
-	}
-}
 
 export default function PostDetailPage() {
 	const { slug } = useParams<{ slug: string }>();
@@ -102,24 +36,31 @@ export default function PostDetailPage() {
 		};
 	}, [slug]);
 
-	const [htmlContent, setHtmlContent] = useState('');
-	const [loaded, setLoaded] = useState(false);
+	// 预编译 HTML 已存储在 post.html 中，直接使用（经过 DOMPurify 清洗）
+	const sanitizedHtml = useMemo(() => {
+		if (!post) return '';
+		return DOMPurify.sanitize(post.html, {
+			ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'img', 'ul', 'ol', 'li',
+				'blockquote', 'pre', 'code', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
+				'hr', 'br', 'strong', 'em', 'del', 'sup', 'sub', 'figure', 'figcaption',
+				'div', 'span', 'input', 'details', 'summary'
+			],
+			ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel',
+				'loading', 'width', 'height', 'type', 'checked', 'disabled'
+			]
+		});
+	}, [post]);
+
+	const [contentReady, setContentReady] = useState(false);
 
 	useEffect(() => {
 		if (!post || !slug) return;
-		let html = md.render(post.content);
-		html = html.replace(/<h1[^>]*>[\s\S]*?<\/h1>/, '');
-		html = html.replace(
-			/(<img[^>]+src=")(?!\/|https?:\/\/)([^"]+)(")/g,
-			(_m: string, before: string, src: string, after: string) =>
-				`${before}/posts/${slug}/${src}${after}`
-		);
-		setHtmlContent(html);
-		setLoaded(true);
+		setContentReady(true);
 	}, [post, slug]);
 
+	// 客户端后处理：Mermaid + 代码高亮 + 搜索高亮
 	useEffect(() => {
-		if (!loaded || !proseRef.current) return;
+		if (!contentReady || !proseRef.current) return;
 		(async () => {
 			await renderMermaidIn(proseRef.current);
 			await highlightCodeBlocksIn(proseRef.current);
@@ -128,24 +69,24 @@ export default function PostDetailPage() {
 			if (highlight && proseRef.current) {
 				const terms = parseQueryTerms(highlight);
 				if (terms.length > 0) {
-					highlightSearchTermsIn(proseRef.current, terms);
-					setTimeout(() => {
-						const firstMark = proseRef.current?.querySelector('mark.search-highlight');
-						if (firstMark) {
-							const top = (firstMark as HTMLElement).getBoundingClientRect().top + window.scrollY - 100;
-							window.scrollTo({ top, behavior: 'smooth' });
-						}
-					}, 100);
+					// SearchHighlight 组件会处理
 				}
 			}
 		})();
-	}, [loaded, htmlContent, slug, searchParams.toString()]);
+	}, [contentReady, slug, searchParams.toString()]);
 
-	useEffect(() => {
-		if (post) document.title = `${post.metadata.title} - ${siteConfig.title}`;
-		const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-		if (canonical && slug) canonical.href = `${siteConfig.url}/posts/${slug}/`;
-	}, [post, slug]);
+	// 搜索高亮
+	const highlightTerms = useMemo(() => {
+		const h = searchParams.get('highlight');
+		return h ? parseQueryTerms(h) : [];
+	}, [searchParams]);
+
+	// SEO 元数据
+	const pageTitle = post ? `${post.metadata.title} - ${siteConfig.title}` : siteConfig.title;
+	const pageUrl = post ? `${siteConfig.url}/posts/${slug}/` : siteConfig.url;
+	const pageImage = post?.metadata.image || siteConfig.icon;
+	const pageDescription = post?.metadata.description || siteConfig.description;
+	const pagePublished = post?.metadata.published;
 
 	if (!post) return <Navigate to="/posts" replace />;
 
@@ -153,41 +94,57 @@ export default function PostDetailPage() {
 
 	return (
 		<>
+			<Helmet>
+				<title>{pageTitle}</title>
+				<meta name="description" content={pageDescription} />
+				<link rel="canonical" href={pageUrl} />
+				<meta property="og:title" content={pageTitle} />
+				<meta property="og:description" content={pageDescription} />
+				<meta property="og:type" content="article" />
+				<meta property="og:url" content={pageUrl} />
+				<meta property="og:image" content={pageImage} />
+				<meta name="twitter:card" content="summary_large_image" />
+				{pagePublished && <meta property="article:published_time" content={pagePublished} />}
+				<script type="application/ld+json">
+					{JSON.stringify({
+						'@context': 'https://schema.org',
+						'@type': 'Article',
+						headline: post.metadata.title,
+						description: pageDescription,
+						image: pageImage,
+						datePublished: pagePublished,
+						url: pageUrl,
+						author: {
+							'@type': 'Person',
+							name: siteConfig.headerTitle
+						}
+					})}
+				</script>
+			</Helmet>
+
 			<main className="pm-main">
 				<article className="pm-post-single">
-					<header className="pm-post-header">
-						<nav className="pm-breadcrumbs" aria-label="Breadcrumb">
-							<Link to="/">主页</Link>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-								strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-								<polyline points="9 18 15 12 9 6" />
-							</svg>
-							<Link to="/posts">文章</Link>
-						</nav>
-						<h1 className="pm-post-title pm-entry-hint-parent">{post.metadata.title}</h1>
-						<div className="pm-post-description">{post.metadata.description}</div>
-						<div className="pm-post-meta">
-							<span title={post.metadata.published}>{formatDate(post.metadata.published)}</span>
-							&nbsp;·&nbsp;
-							<span>{countPostWords(post)} 字</span>
-						</div>
-					</header>
+					<ArticleHeader post={post} />
 
 					{post.metadata.image && (
 						<figure className="pm-entry-cover">
-							<img loading="eager" src={post.metadata.image} alt="" />
+							<img loading="eager" fetchPriority="high" src={post.metadata.image} alt="" />
 						</figure>
 					)}
 
 					{showToc && <PostToc container={proseElement} trigger={slug} />}
 
 					<div ref={proseCallbackRef} className="pm-post-content">
-						{loaded ? (
-							<div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+						{contentReady ? (
+							<div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
 						) : (
 							<p>加载中...</p>
 						)}
 					</div>
+
+					{highlightTerms.length > 0 && (
+						<SearchHighlight container={proseElement} terms={highlightTerms} />
+					)}
 
 					<footer className="pm-post-footer">
 						<nav className="pm-paginav">

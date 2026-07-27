@@ -1,0 +1,251 @@
+/* ===== Post Entry Cards & Lists ===== */
+
+.pm-post-entry {
+	position: relative;
+	margin-bottom: var(--pm-gap);
+	padding: var(--pm-gap);
+	background: var(--pm-entry);
+	border: 1px solid var(--pm-border);
+	border-radius: var(--pm-radius);
+	transition:
+		transform 0.25s ease,
+		border-color 0.25s ease;
+}
+
+.pm-post-entry:hover,
+.pm-post-entry:focus-within {
+	transform: translateY(-2px);
+	border-color: var(--pm-tertiary);
+}
+
+.pm-entry-cover {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin: 0 0 var(--pm-gap);
+	font-size: 14px;
+	text-align: center;
+}
+
+.pm-entry-cover img {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-width: 100%;
+	border-radius: var(--pm-radius);
+}
+
+.pm-entry-header h2,
+.pm-entry-header .pm-entry-hint-parent {
+	margin: 0;
+	font-size: 24px;
+	line-height: 1.3;
+	font-weight: 700;
+}
+
+.pm-entry-hint-parent {
+	display: flex;
+	justify-content: space-between;
+}
+
+.pm-entry-content {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	margin: 8px 0;
+	color: var(--pm-secondary);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.pm-entry-content p {
+	margin: 0;
+}
+
+.pm-entry-footer {
+	color: var(--pm-secondary);
+	font-size: 13px;
+}
+
+.pm-entry-pinned {
+	color: oklch(0.58 0.24 27);
+	font-weight: 600;
+}
+
+.pm-entry-link {
+	position: absolute;
+	inset: 0;
+	border-radius: var(--pm-radius);
+}
+
+/* Pagination */
+.pm-page-footer {
+	margin-top: var(--pm-gap);
+}
+
+.pm-pagination {
+	display: flex;
+}
+
+.pm-pagination button {
+	color: var(--pm-theme);
+	font-size: 13px;
+	line-height: 36px;
+	background: var(--pm-primary);
+	border-radius: 18px;
+	padding: 0 16px;
+}
+
+.pm-pagination .pm-next {
+	margin-inline-start: auto;
+}
+
+/* Empty state */
+.pm-empty {
+	padding: 48px 0;
+	color: var(--pm-secondary);
+	text-align: center;
+}
+
+/* Archives */
+.pm-archive-posts {
+	width: 100%;
+	font-size: 16px;
+}
+
+.pm-archive-year {
+	margin-top: 40px;
+}
+
+.pm-archive-year:not(:last-of-type) {
+	border-bottom: 2px solid var(--pm-border);
+}
+
+.pm-archive-year h2 {
+	margin: 0;
+	font-size: 32px;
+	line-height: 1.2;
+}
+
+.pm-archive-count,
+.pm-archive-meta {
+	color: var(--pm-secondary);
+	font-size: 14px;
+}
+
+.pm-archive-month {
+	display: flex;
+	align-items: flex-start;
+	padding: 10px 0;
+}
+
+.pm-archive-month:not(:last-of-type) {
+	border-bottom: 1px solid var(--pm-border);
+}
+
+.pm-archive-month-header {
+	width: 200px;
+	margin: 25px 0;
+	font-size: 24px;
+	line-height: 1.2;
+}
+
+.pm-archive-entries {
+	flex: 1;
+}
+
+.pm-archive-entry {
+	position: relative;
+	margin: 10px 0;
+	padding: 5px;
+}
+
+.pm-archive-entry-title {
+	margin: 5px 0;
+	font-size: 18px;
+	font-weight: 400;
+	line-height: 1.2;
+}
+
+/* Search */
+.pm-searchbox {
+	margin-top: var(--pm-content-gap);
+}
+
+.pm-searchbox input {
+	width: 100%;
+	padding: 4px 10px;
+	color: var(--pm-primary);
+	font-weight: 700;
+	background: var(--pm-theme);
+	border: 2px solid var(--pm-tertiary);
+	border-radius: var(--pm-radius);
+	outline: 0;
+}
+
+.pm-search-results {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	width: 100%;
+	margin: var(--pm-content-gap) 0;
+	padding: 0;
+	list-style: none;
+}
+
+.pm-search-results li {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 15px;
+	background: var(--pm-entry);
+	border: 1px solid var(--pm-border);
+	border-radius: var(--pm-radius);
+	font-weight: 500;
+	transition:
+		transform 0.25s ease,
+		border-color 0.25s ease;
+}
+
+.pm-search-results li:hover,
+.pm-search-results li:focus-within {
+	transform: translateY(-2px);
+	border-color: var(--pm-tertiary);
+}
+
+.pm-search-results h2 {
+	margin: 0;
+	font-size: 20px;
+	line-height: 1.3;
+}
+
+.pm-search-results p {
+	margin: 4px 0 0;
+	color: var(--pm-secondary);
+	font-size: 14px;
+}
+
+.pm-search-empty {
+	color: var(--pm-secondary);
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+	:root {
+		--pm-gap: 14px;
+	}
+
+	.pm-footer {
+		padding: calc((var(--pm-footer-height) - var(--pm-gap) - 10px) / 2) var(--pm-gap);
+	}
+
+	.pm-archive-month {
+		flex-direction: column;
+	}
+
+	.pm-archive-year {
+		margin-top: 20px;
+	}
+}

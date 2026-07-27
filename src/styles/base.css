@@ -1,0 +1,49 @@
+/* ===== Base Reset & Typography ===== */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding-bottom: 0;
+	background: var(--pm-theme);
+	color: var(--pm-primary);
+	font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei',
+		'Hiragino Sans GB', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+		'Open Sans', 'Helvetica Neue', sans-serif;
+	font-size: 18px;
+	line-height: 1.6;
+	word-break: break-word;
+	overflow-x: hidden;
+}
+
+body:has(.pm-list-main) {
+	background: var(--pm-code-bg);
+}
+
+:root[data-theme='dark'] body:has(.pm-list-main) {
+	background: var(--pm-theme);
+}
+
+body a,
+body button,
+body h1,
+body h2,
+body h3,
+body h4,
+body h5,
+body h6 {
+	color: var(--pm-primary);
+}
+
+body a {
+	text-decoration: none;
+}
+
+body button {
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+}

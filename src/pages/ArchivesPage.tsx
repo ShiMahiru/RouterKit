@@ -1,24 +1,21 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router';
+import { Helmet } from 'react-helmet-async';
 import { siteConfig } from '@/config';
-import { getDisplayPosts } from '@/utils/posts';
+import { getDisplayPosts, createPostSearchText } from '@/utils/posts';
 
-function yearOf(dateString: string) { return new Date(dateString).getFullYear(); }
-function monthOf(dateString: string) {
-	return new Date(dateString).toLocaleDateString('zh-CN', { month: 'long' });
-}
-function dayOf(dateString: string) {
-	return new Date(dateString).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
-}
+function normalize(v: string) { return v.trim().toLowerCase(); }
 
 export default function ArchivesPage() {
 	const posts = useMemo(() => getDisplayPosts(), []);
 
-	useEffect(() => {
-	document.title = `归档 - ${siteConfig.title}`;
-	const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-	if (canonical) canonical.href = `${siteConfig.url}/archives/`;
-}, []);
+	function yearOf(dateString: string) { return new Date(dateString).getFullYear(); }
+	function monthOf(dateString: string) {
+		return new Date(dateString).toLocaleDateString('zh-CN', { month: 'long' });
+	}
+	function dayOf(dateString: string) {
+		return new Date(dateString).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
+	}
 
 	const groups = useMemo(() => {
 		const years = new Map<number, Map<string, typeof posts>>();
@@ -38,39 +35,45 @@ export default function ArchivesPage() {
 	}, [posts]);
 
 	return (
-		<main className="pm-main">
-			<header className="pm-page-header">
-				<h1>归档</h1>
-			</header>
-			{posts.length === 0 ? (
-				<div className="pm-empty">暂无文章</div>
-			) : (
-				<div className="pm-archive-posts">
-					{groups.map(group => (
-						<section key={group.year} className="pm-archive-year">
-							<h2>
-								{group.year}
-								<sup className="pm-archive-count">{group.count}</sup>
-							</h2>
-							{group.months.map(m => (
-								<div key={m.month} className="pm-archive-month">
-									<h3 className="pm-archive-month-header">{m.month}</h3>
-									<div className="pm-archive-entries">
-										{m.posts.map(post => (
-											<article key={post.slug} className="pm-archive-entry">
-												<div className="pm-archive-meta">{dayOf(post.metadata.published)}</div>
-												<h4 className="pm-archive-entry-title">
-													<Link to={`/posts/${post.slug}`}>{post.metadata.title}</Link>
-												</h4>
-											</article>
-										))}
+		<>
+			<Helmet>
+				<title>{`归档 - ${siteConfig.title}`}</title>
+				<link rel="canonical" href={`${siteConfig.url}/archives/`} />
+			</Helmet>
+			<main className="pm-main">
+				<header className="pm-page-header">
+					<h1>归档</h1>
+				</header>
+				{posts.length === 0 ? (
+					<div className="pm-empty">暂无文章</div>
+				) : (
+					<div className="pm-archive-posts">
+						{groups.map(group => (
+							<section key={group.year} className="pm-archive-year">
+								<h2>
+									{group.year}
+									<sup className="pm-archive-count">{group.count}</sup>
+								</h2>
+								{group.months.map(m => (
+									<div key={m.month} className="pm-archive-month">
+										<h3 className="pm-archive-month-header">{m.month}</h3>
+										<div className="pm-archive-entries">
+											{m.posts.map(post => (
+												<article key={post.slug} className="pm-archive-entry">
+													<div className="pm-archive-meta">{dayOf(post.metadata.published)}</div>
+													<h4 className="pm-archive-entry-title">
+														<Link to={`/posts/${post.slug}`}>{post.metadata.title}</Link>
+													</h4>
+												</article>
+											))}
+										</div>
 									</div>
-								</div>
-							))}
-						</section>
-					))}
-				</div>
-			)}
-		</main>
+								))}
+							</section>
+						))}
+					</div>
+				)}
+			</main>
+		</>
 	);
 }

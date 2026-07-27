@@ -1,68 +1,87 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
+import { Helmet } from 'react-helmet-async';
+import MiniSearch from 'minisearch';
 import { siteConfig } from '@/config';
-import { getDisplayPosts, createPostSearchText } from '@/utils/posts';
-
-function normalize(v: string) { return v.trim().toLowerCase(); }
+import { getDisplayPosts } from '@/utils/posts';
 
 export default function SearchPage() {
 	const posts = useMemo(() => getDisplayPosts(), []);
-	// 预计算每篇文章的搜索文本，避免每次过滤时重复计算
-	const indexedPosts = useMemo(
-		() => posts.map(post => ({ post, searchText: createPostSearchText(post) })),
-		[posts]
-	);
+
+	const miniSearch = useMemo(() => {
+		const ms = new MiniSearch({
+			fields: ['title', 'description', 'content'],
+			storeFields: ['title', 'description', 'slug', 'published'],
+			searchOptions: {
+				boost: { title: 3, description: 1.5 },
+				prefix: true,
+				fuzzy: 0.2
+			}
+		});
+		ms.addAll(posts.map(p => ({
+			id: p.slug,
+			title: p.metadata.title,
+			description: p.metadata.description,
+			content: p.rawContent,
+			slug: p.slug,
+			published: p.metadata.published
+		})));
+		return ms;
+	}, [posts]);
+
 	const [query, setQuery] = useState('');
 
-	useEffect(() => {
-	document.title = `搜索 - ${siteConfig.title}`;
-	const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-	if (canonical) canonical.href = `${siteConfig.url}/search/`;
-}, []);
-
-	const term = normalize(query);
-
 	const results = useMemo(() => {
-		if (!term) return [];
-		return indexedPosts
-			.filter(({ searchText }) => searchText.includes(term))
-			.map(({ post }) => post);
-	}, [indexedPosts, term]);
+		const q = query.trim();
+		if (!q) return [];
+		return miniSearch.search(q).map(r => ({
+			slug: r.slug,
+			title: r.title,
+			description: r.description,
+			published: r.published
+		}));
+	}, [miniSearch, query]);
 
 	return (
-		<main className="pm-main">
-			<header className="pm-page-header">
-				<h1>搜索</h1>
-			</header>
-			<div className="pm-searchbox">
-				<input
-					value={query}
-					onChange={(e) => setQuery(e.target.value)}
-					type="search"
-					placeholder="搜索文章"
-					aria-label="搜索文章"
-				/>
-			</div>
-			<ul className="pm-search-results" aria-live="polite">
-				{query.trim() && results.length === 0 ? (
-					<li className="pm-search-empty">未找到匹配的文章</li>
-				) : (
-					results.map(post => (
-						<li key={post.slug}>
-							<Link
-								className="pm-entry-link"
-								to={`/posts/${post.slug}`}
-								aria-label={`文章链接：${post.metadata.title}`}
-							></Link>
-							<div>
-								<h2>{post.metadata.title}</h2>
-								<p>{post.metadata.description}</p>
-							</div>
-							<span>»</span>
-						</li>
-					))
-				)}
-			</ul>
-		</main>
+		<>
+			<Helmet>
+				<title>{`搜索 - ${siteConfig.title}`}</title>
+				<link rel="canonical" href={`${siteConfig.url}/search/`} />
+			</Helmet>
+			<main className="pm-main">
+				<header className="pm-page-header">
+					<h1>搜索</h1>
+				</header>
+				<div className="pm-searchbox">
+					<input
+						value={query}
+						onChange={(e) => setQuery(e.target.value)}
+						type="search"
+						placeholder="搜索文章"
+						aria-label="搜索文章"
+					/>
+				</div>
+				<ul className="pm-search-results" aria-live="polite">
+					{query.trim() && results.length === 0 ? (
+						<li className="pm-search-empty">未找到匹配的文章</li>
+					) : (
+						results.map(r => (
+							<li key={r.slug}>
+								<Link
+									className="pm-entry-link"
+									to={`/posts/${r.slug}?highlight=${encodeURIComponent(query)}`}
+									aria-label={`文章链接：${r.title}`}
+								></Link>
+								<div>
+									<h2>{r.title}</h2>
+									<p>{r.description}</p>
+								</div>
+								<span>»</span>
+							</li>
+						))
+					)}
+				</ul>
+			</main>
+		</>
 	);
 }

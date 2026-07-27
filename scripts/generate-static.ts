@@ -1,4 +1,4 @@
-// Build-time static file generation: RSS, sitemap.xml, robots.txt
+// Build-time static file generation: RSS, sitemap.xml, robots.txt, llms.txt
 import { Feed } from 'feed';
 import MarkdownIt from 'markdown-it';
 import fs from 'fs';
@@ -29,7 +29,6 @@ const postDirs = fs.readdirSync(postsDir).filter(name => {
 	return fs.statSync(d).isDirectory() && fs.existsSync(path.join(d, 'index.md'));
 });
 
-// 扁平化的文章结构，与 src/types/post.ts 的 Post 保持字段对应
 interface FlatPost {
 	slug: string;
 	title: string;
@@ -58,6 +57,9 @@ for (const slug of postDirs) {
 
 posts.sort((a, b) => comparePostByPinnedAndDate(a, b));
 
+const buildDir = path.join(projectRoot, 'build');
+fs.mkdirSync(buildDir, { recursive: true });
+
 // ---- Generate RSS ----
 const feed = new Feed({
 	title: SITE_TITLE,
@@ -80,17 +82,15 @@ for (const post of posts) {
 	);
 
 	feed.addItem({
-	title: post.title,
-	id: `${SITE_URL}/posts/${post.slug}/`,
-	link: `${SITE_URL}/posts/${post.slug}/`,
-	description: post.description || post.title,
-	content: html,
-	date: new Date(post.published || 0)
-});
+		title: post.title,
+		id: `${SITE_URL}/posts/${post.slug}/`,
+		link: `${SITE_URL}/posts/${post.slug}/`,
+		description: post.description || post.title,
+		content: html,
+		date: new Date(post.published || 0)
+	});
 }
 
-const buildDir = path.join(projectRoot, 'build');
-fs.mkdirSync(buildDir, { recursive: true });
 fs.writeFileSync(path.join(buildDir, 'rss.xml'), feed.rss2(), 'utf8');
 console.log('[generate-static] rss.xml generated');
 
@@ -145,3 +145,46 @@ Sitemap: ${SITE_URL}/sitemap.xml
 
 fs.writeFileSync(path.join(buildDir, 'robots.txt'), robots, 'utf8');
 console.log('[generate-static] robots.txt generated');
+
+// ---- Generate _headers (Cloudflare) ----
+const headers = `/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/rss.xml
+  Cache-Control: public, max-age=3600
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Cache-Control: public, max-age=86400
+`;
+
+fs.writeFileSync(path.join(buildDir, '_headers'), headers, 'utf8');
+console.log('[generate-static] _headers generated');
+
+// ---- Generate llms.txt ----
+const llmsLines = [
+	`# ${SITE_TITLE}`,
+	`> ${SITE_DESC}`,
+	'',
+	`- [首页](${SITE_URL})`,
+	`- [文章列表](${SITE_URL}/posts/)`,
+	`- [归档](${SITE_URL}/archives/)`,
+	'',
+	'## 文章',
+	'',
+	...posts.map(post => {
+		const date = post.published ? new Date(post.published).toISOString().slice(0, 10) : '';
+		return `- [${post.title}](${SITE_URL}/posts/${post.slug}/) (${date})`;
+	}),
+	'',
+	'## 关于',
+	`本博客由 ${siteConfig.headerTitle} 维护，使用 React + Vite 构建。`,
+	`RSS: ${SITE_URL}/rss.xml`,
+	`Sitemap: ${SITE_URL}/sitemap.xml`,
+	''
+];
+
+fs.writeFileSync(path.join(buildDir, 'llms.txt'), llmsLines.join('\n'), 'utf8');
+console.log('[generate-static] llms.txt generated');

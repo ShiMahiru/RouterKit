@@ -1,0 +1,132 @@
+/* ===== Header / Nav / Layout / Footer ===== */
+
+/* Header & Nav */
+.pm-header-nav {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	max-width: calc(var(--pm-nav-width) + var(--pm-gap) * 2);
+	margin: auto;
+	line-height: var(--pm-header-height);
+	padding: 0 var(--pm-gap);
+	column-gap: var(--pm-gap);
+}
+
+.pm-header-nav a {
+	display: block;
+}
+
+.pm-logo,
+.pm-menu {
+	display: flex;
+}
+
+.pm-logo {
+	align-items: center;
+	column-gap: 0.55rem;
+	flex-wrap: wrap;
+}
+
+.pm-logo a {
+	display: flex;
+	align-items: center;
+	column-gap: 0.55rem;
+	font-size: 24px;
+	font-weight: 700;
+}
+
+.pm-theme-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: var(--pm-header-height);
+	padding: 0;
+}
+
+:root[data-theme='dark'] .pm-moon {
+	display: none;
+}
+
+:root[data-theme='light'] .pm-sun,
+:root:not([data-theme]) .pm-sun {
+	display: none;
+}
+
+.pm-menu {
+	align-items: center;
+	list-style: none;
+	word-break: keep-all;
+	overflow-x: auto;
+	white-space: nowrap;
+	column-gap: var(--pm-gap);
+	margin: 0;
+	padding: 0;
+}
+
+.pm-menu a {
+	font-size: 16px;
+}
+
+/* Main content area */
+.pm-main {
+	position: relative;
+	min-height: calc(100vh - var(--pm-header-height) - var(--pm-footer-height));
+	max-width: calc(var(--pm-main-width) + var(--pm-gap) * 2);
+	margin: auto;
+	padding: var(--pm-gap);
+	overflow-x: hidden;
+}
+
+/* Footer */
+.pm-footer {
+	max-width: calc(var(--pm-main-width) + var(--pm-gap) * 2);
+	margin: auto;
+	padding: calc((var(--pm-footer-height) - var(--pm-gap)) / 2) var(--pm-gap);
+	text-align: center;
+	line-height: 24px;
+	color: var(--pm-secondary);
+	font-size: 12px;
+}
+
+.pm-footer span {
+	margin-inline: 1px;
+}
+
+.pm-footer span:last-child {
+	white-space: normal;
+}
+
+.pm-footer a {
+	color: inherit;
+	text-decoration: underline;
+	text-underline-offset: 0.25rem;
+}
+
+/* Back to top */
+.pm-top-link {
+	position: fixed;
+	right: 1.5rem;
+	bottom: 3rem;
+	z-index: 99;
+	width: 3rem;
+	height: 3rem;
+	padding: 0.72rem;
+	background: var(--pm-tertiary);
+	border-radius: 64px;
+	color: var(--pm-secondary);
+	font-size: 12px;
+	transition:
+		visibility 0.3s,
+		opacity 0.3s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.pm-top-link.hidden {
+	visibility: hidden;
+	opacity: 0;
+}
+
+.pm-top-link svg {
+	width: 100%;
+	height: 100%;
+}

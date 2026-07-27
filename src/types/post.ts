@@ -11,5 +11,14 @@ export interface PostMetadata {
 export interface Post {
 	slug: string;
 	metadata: PostMetadata;
-	content: string;
+	html: string;
+	rawContent: string;
+}
+
+/** 虚拟模块 virtual:posts-data 导出的预编译文章结构 */
+export interface PrecompiledPost {
+	slug: string;
+	metadata: PostMetadata;
+	html: string;
+	rawContent: string;
 }
