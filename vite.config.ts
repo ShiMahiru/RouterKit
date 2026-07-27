@@ -1,13 +1,23 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { postImagesPlugin } from './vite-plugins/post-images.js';
 import path from 'path';
+import { siteConfig } from './src/config';
 
 export default defineConfig({
-	plugins: [react(), postImagesPlugin()],
+	plugins: [
+		react(),
+		{
+			name: 'html-inject',
+			transformIndexHtml(html) {
+				return html
+					.replace('__DESCRIPTION__', siteConfig.description)
+					.replace('__ICON__', siteConfig.icon);
+			}
+		}
+	],
 	resolve: {
 		alias: {
-			'$lib': path.resolve('./src/lib')
+			'@': path.resolve('./src')
 		}
 	},
 	build: {

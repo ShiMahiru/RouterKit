@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router';
-import type { Post } from '$lib/types/post';
-import { countPostWords, getPostReadTime } from '$lib/utils/posts';
-import { formatDate } from '$lib/utils/date';
+import type { Post } from '@/types/post';
+import { countPostWords } from '@/utils/posts';
+import { formatDate } from '@/utils/date';
 
 interface Props {
 	posts: Post[];
@@ -41,9 +41,9 @@ export default function PaperPostList({ posts }: Props) {
 					</div>
 
 					<footer className="pm-entry-footer">
+						{post.metadata.pinned && <span className="pm-entry-pinned">置顶</span>}
+						{post.metadata.pinned && <>&nbsp;·&nbsp;</>}
 						<span title={post.metadata.published}>{formatDate(post.metadata.published)}</span>
-						&nbsp;·&nbsp;
-						<span>{getPostReadTime(post)} 分钟</span>
 						&nbsp;·&nbsp;
 						<span>{countPostWords(post)} 字</span>
 					</footer>

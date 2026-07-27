@@ -7,17 +7,10 @@
 	"engines": {
 		"node": ">=22"
 	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"sharp"
-		]
-	},
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build && node scripts/build-static.js",
+		"build": "vite build && node scripts/generate-rss.js",
 		"preview": "vite preview",
-		"deploy:workers": "pnpm run build && npx --yes wrangler deploy",
-		"new-post": "node scripts/new-post.js",
 		"check": "tsc --noEmit",
 		"check:watch": "tsc --noEmit --watch"
 	},
@@ -34,7 +27,6 @@
 		"@types/react": "^19.0.0",
 		"@types/react-dom": "^19.0.0",
 		"@vitejs/plugin-react": "^6.0.0",
-		"sharp": "^0.34.5",
 		"typescript": "^6.0.2",
 		"vite": "^8.0.7"
 	}

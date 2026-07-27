@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { useParams, Navigate, useSearchParams, Link } from 'react-router';
-import { siteConfig } from '../config';
-import ImageViewer from '$lib/components/ImageViewer';
-import Giscus from '$lib/components/Giscus';
-import PostToc from '$lib/components/PostToc';
-import { highlightCodeBlocksIn } from '$lib/utils/highlight';
-import { renderMermaidIn } from '$lib/utils/mermaid';
-import { countPostWords, getPostReadTime, getPostBySlug } from '$lib/utils/posts';
-import { resolvePostAssetPath } from '$lib/utils/markdown';
-import { formatDate } from '$lib/utils/date';
+import { siteConfig } from '@/config';
+import ImageViewer from '@/components/ImageViewer';
+import Giscus from '@/components/Giscus';
+import PostToc from '@/components/PostToc';
+import { highlightCodeBlocksIn } from '@/utils/highlight';
+import { renderMermaidIn } from '@/utils/mermaid';
+import { countPostWords, getPostBySlug } from '@/utils/posts';
+import { resolvePostAssetPath } from '@/utils/markdown';
+import { formatDate } from '@/utils/date';
 import MarkdownIt from 'markdown-it';
 
 const md = new MarkdownIt({ html: true, linkify: true, breaks: true });
@@ -107,8 +107,6 @@ export default function PostDetailPage() {
 						<div className="pm-post-description">{post.metadata.description}</div>
 						<div className="pm-post-meta">
 							<span title={post.metadata.published}>{formatDate(post.metadata.published)}</span>
-							&nbsp;·&nbsp;
-							<span>{getPostReadTime(post)} 分钟</span>
 							&nbsp;·&nbsp;
 							<span>{countPostWords(post)} 字</span>
 						</div>

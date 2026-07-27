@@ -1,7 +1,15 @@
 import { useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
-import { siteConfig } from '../config';
-import { getDisplayPosts } from '$lib/utils/posts';
+import { siteConfig } from '@/config';
+import { getDisplayPosts } from '@/utils/posts';
+
+function yearOf(dateString: string) { return new Date(dateString).getFullYear(); }
+function monthOf(dateString: string) {
+	return new Date(dateString).toLocaleDateString('zh-CN', { month: 'long' });
+}
+function dayOf(dateString: string) {
+	return new Date(dateString).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
+}
 
 export default function ArchivesPage() {
 	const posts = useMemo(() => getDisplayPosts(), []);
@@ -9,14 +17,6 @@ export default function ArchivesPage() {
 	useEffect(() => {
 		document.title = `归档 - ${siteConfig.title}`;
 	}, []);
-
-	function yearOf(dateString: string) { return new Date(dateString).getFullYear(); }
-	function monthOf(dateString: string) {
-		return new Date(dateString).toLocaleDateString('zh-CN', { month: 'long' });
-	}
-	function dayOf(dateString: string) {
-		return new Date(dateString).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
-	}
 
 	const groups = useMemo(() => {
 		const years = new Map<number, Map<string, typeof posts>>();

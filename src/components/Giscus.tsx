@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { siteConfig } from '../../config';
+import { siteConfig } from '@/config';
 
 const giscus = siteConfig.giscus;
 const maxAttempts = 5;

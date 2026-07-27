@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router';
-import { siteConfig } from '../../config';
+import { siteConfig } from '@/config';
 
 const navItems = [
 	{ label: '搜索', href: '/search' },
 	{ label: '归档', href: '/archives' },
-	{ label: 'RSS', href: '/rss.xml' }
+	{ label: 'RSS', href: '/rss.xml', external: true }
 ] as const;
 
 function preferredTheme(): 'light' | 'dark' {
@@ -91,10 +91,10 @@ export default function NavBar() {
 					</li>
 					{navItems.map(item => (
 						<li key={item.href}>
-							{item.href.startsWith('/') && !item.href.endsWith('.xml') ? (
-								<Link to={item.href} title={item.label}><span>{item.label}</span></Link>
-							) : (
+							{'external' in item ? (
 								<a href={item.href} title={item.label}><span>{item.label}</span></a>
+							) : (
+								<Link to={item.href} title={item.label}><span>{item.label}</span></Link>
 							)}
 						</li>
 					))}

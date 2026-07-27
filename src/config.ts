@@ -1,6 +1,7 @@
 export const siteConfig = {
 	title: '博客 | Yuln',
 	headerTitle: 'Yuln',
+	description: 'Yuln 的个人技术博客，专注于 IT / 互联网技术分享与实践。',
 	icon: 'https://q2.qlogo.cn/headimg_dl?dst_uin=242531778&spec=0',
 	giscus: {
 		src: 'https://giscus.app/client.js',
@@ -18,5 +19,3 @@ export const siteConfig = {
 		loading: 'lazy'
 	}
 } as const;
-
-export type SiteConfig = typeof siteConfig;

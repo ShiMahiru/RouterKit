@@ -17,9 +17,9 @@ const BUILTIN_LANGS = new Set([
 ]);
 
 const PRELOAD_LANGS = [
-	'bash', 'shell', 'go', 'rust', 'python', 'json', 'yaml', 'xml',
+	'bash', 'go', 'rust', 'python', 'json', 'yaml', 'xml',
 	'css', 'sql', 'cpp', 'csharp', 'java', 'javascript', 'typescript',
-	'php', 'ruby', 'kotlin', 'swift', 'dockerfile', 'ini', 'powershell'
+	'php', 'ruby', 'kotlin', 'swift'
 ];
 
 interface HljsResult {

@@ -1,29 +1,58 @@
-import type { Post, PostMetadata } from '$lib/types/post';
-import { resolvePostAssetPath } from '$lib/utils/markdown';
+import type { Post, PostMetadata } from '@/types/post';
+import { resolvePostAssetPath } from '@/utils/markdown';
 
 function parseFrontmatter(raw: string): { metadata: Record<string, unknown>; content: string } {
 	const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
 	if (!match) return { metadata: {}, content: raw };
 	const body = raw.slice(match[0].length).trim();
 	const meta: Record<string, unknown> = {};
-	for (const line of match[1].split('\n')) {
+	const lines = match[1].split('\n');
+	let collectingKey: string | null = null;
+	let collectingList: string[] = [];
+
+	for (const line of lines) {
+		// 多行列表收集
+		if (collectingKey) {
+			const listItem = line.match(/^\s+-\s+(.*)$/);
+			if (listItem) {
+				let item = listItem[1].trim();
+				item = item.replace(/^["']|["']$/g, '');
+				if (item) collectingList.push(item);
+				continue;
+			}
+			// 列表结束
+			meta[collectingKey] = collectingList;
+			collectingKey = null;
+			collectingList = [];
+		}
+
 		const kv = line.match(/^(\w[\w-]*):\s*(.*)$/);
 		if (!kv) continue;
 		const key = kv[1].trim();
 		let val = kv[2].trim();
+
 		if (val === 'true' || val === 'false') { meta[key] = val === 'true'; continue; }
 		if (val.startsWith('[') && val.endsWith(']')) {
 			meta[key] = val.slice(1, -1).split(',').map(s => s.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
 			continue;
 		}
+		// 值为空 → 可能是多行列表的起始
+		if (val === '') {
+			collectingKey = key;
+			collectingList = [];
+			continue;
+		}
 		if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) val = val.slice(1, -1);
 		meta[key] = val;
+	}
+	if (collectingKey) {
+		meta[collectingKey] = collectingList;
 	}
 	return { metadata: meta, content: body };
 }
 
 // Load raw markdown files
-const rawModules = import.meta.glob('/src/posts/*/index.md', {
+const rawModules = import.meta.glob('/src/content/posts/*/index.md', {
 	eager: true,
 	query: '?raw',
 	import: 'default'
@@ -68,10 +97,6 @@ export function countPostWords(post: Pick<Post, 'metadata' | 'content'>): number
 	const chineseChars = text.match(/[\u4e00-\u9fa5]/g) || [];
 	const englishWords = text.match(/[a-zA-Z]+/g) || [];
 	return chineseChars.length + englishWords.length;
-}
-
-export function getPostReadTime(post: Pick<Post, 'metadata' | 'content'>): number {
-	return Math.max(1, Math.ceil(countPostWords(post) / 300));
 }
 
 export function createPostSearchText(post: Post): string {
@@ -122,29 +147,6 @@ export function getDisplayPosts(): Post[] {
 			image: resolvePostAssetPath(post.slug, post.metadata.image)
 		}
 	}));
-}
-
-export function getPostTags(post: Post): string[] {
-	const values = [...(post.metadata.tags ?? []), ...(post.metadata.categories ?? [])];
-	return Array.from(new Set(values.map((tag) => tag.trim()).filter(Boolean)));
-}
-
-export function getAllTags(posts: Post[] = getDisplayPosts()): { name: string; count: number }[] {
-	const counts = new Map<string, number>();
-
-	for (const post of posts) {
-		for (const tag of getPostTags(post)) {
-			counts.set(tag, (counts.get(tag) ?? 0) + 1);
-		}
-	}
-
-	return Array.from(counts.entries())
-		.map(([name, count]) => ({ name, count }))
-		.sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
-}
-
-export function getPostsByTag(tag: string, posts: Post[] = getDisplayPosts()): Post[] {
-	return posts.filter((post) => getPostTags(post).some((item) => item.toLowerCase() === tag.toLowerCase()));
 }
 
 /**

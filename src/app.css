@@ -276,6 +276,11 @@ body button {
 	font-size: 13px;
 }
 
+.pm-entry-pinned {
+	color: oklch(0.58 0.24 27);
+	font-weight: 600;
+}
+
 .pm-entry-link {
 	position: absolute;
 	inset: 0;
@@ -366,32 +371,6 @@ body button {
 	font-size: 18px;
 	font-weight: 400;
 	line-height: 1.2;
-}
-
-.pm-terms-tags {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 1em;
-	margin: var(--pm-content-gap) 0 0;
-	padding: 0;
-	list-style: none;
-}
-
-.pm-terms-tags li {
-	display: inline-block;
-	font-weight: 500;
-}
-
-.pm-terms-tags a {
-	display: block;
-	padding: 4px 10px;
-	background: var(--pm-tertiary);
-	border-radius: var(--pm-radius);
-	transition: transform 0.1s;
-}
-
-.pm-terms-tags a:hover {
-	transform: scale(1.04);
 }
 
 .pm-searchbox {

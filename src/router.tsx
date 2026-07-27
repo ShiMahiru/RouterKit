@@ -1,28 +1,18 @@
 import { createBrowserRouter } from 'react-router';
-import Layout from './routes/Layout';
-import HomePage from './routes/HomePage';
-import PostsPage from './routes/PostsPage';
-import PostDetailPage from './routes/PostDetailPage';
-import ArchivesPage from './routes/ArchivesPage';
-import TagsPage from './routes/TagsPage';
-import TagPage from './routes/TagPage';
-import SearchPage from './routes/SearchPage';
-import PostRenderer from './routes/PostRenderer';
+import Layout from '@/pages/Layout';
+import PostsPage from '@/pages/PostsPage';
+import PostDetailPage from '@/pages/PostDetailPage';
+import ArchivesPage from '@/pages/ArchivesPage';
+import SearchPage from '@/pages/SearchPage';
 
 export const router = createBrowserRouter([
 	{
 		element: <Layout />,
 		children: [
-			{ index: true, element: <HomePage /> },
+			{ index: true, element: <PostsPage /> },
 			{ path: 'posts', element: <PostsPage /> },
-			{
-				path: 'posts/:slug',
-				element: <PostRenderer />,
-				children: [{ index: true, element: <PostDetailPage /> }]
-			},
+			{ path: 'posts/:slug', element: <PostDetailPage /> },
 			{ path: 'archives', element: <ArchivesPage /> },
-			{ path: 'tags', element: <TagsPage /> },
-			{ path: 'tags/:tag', element: <TagPage /> },
 			{ path: 'search', element: <SearchPage /> }
 		]
 	}

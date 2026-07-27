@@ -14,7 +14,11 @@ declare global {
 }
 
 let mermaidPromise: Promise<MermaidLike> | null = null;
-let initialized = false;
+let currentTheme: 'light' | 'dark' | null = null;
+
+function getTheme(): 'light' | 'dark' {
+	return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+}
 
 function log(...args: unknown[]) {
 	if (DEBUG) console.debug(...args);
@@ -61,10 +65,6 @@ export async function renderMermaidIn(container: HTMLElement | null | undefined)
 	if (!container) return;
 
 	const candidates = new Set<HTMLElement>();
-	for (const el of Array.from(
-		container.querySelectorAll<HTMLElement>('pre[data-language="mermaid"]')
-	))
-		candidates.add(el);
 	for (const code of Array.from(
 		container.querySelectorAll<HTMLElement>('code.language-mermaid, code[class*="language-mermaid"]')
 	)) {
@@ -75,15 +75,15 @@ export async function renderMermaidIn(container: HTMLElement | null | undefined)
 	log(`[mermaid] found ${candidates.size} blocks in container`);
 
 	const mermaid = await getMermaid();
-	if (!initialized) {
-		const isDark = document.documentElement.classList.contains('dark');
+	const theme = getTheme();
+	if (currentTheme !== theme) {
+		currentTheme = theme;
 		mermaid.initialize({
 			startOnLoad: false,
-			theme: isDark ? 'dark' : 'default',
+			theme: theme === 'dark' ? 'dark' : 'default',
 			securityLevel: 'strict',
 			fontFamily: 'inherit'
 		});
-		initialized = true;
 	}
 
 	let i = 0;

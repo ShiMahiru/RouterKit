@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
-import { siteConfig } from '../config';
-import { getDisplayPosts, createPostSearchText } from '$lib/utils/posts';
+import { siteConfig } from '@/config';
+import { getDisplayPosts, createPostSearchText } from '@/utils/posts';
 
 export default function SearchPage() {
 	const posts = useMemo(() => getDisplayPosts(), []);
