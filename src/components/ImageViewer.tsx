@@ -13,10 +13,11 @@ export default function ImageViewer() {
 		lightbox.addFilter('itemData', (itemData) => {
 			const img = itemData.element as HTMLImageElement | undefined;
 			return {
-				src: img?.src || '',
-				width: img?.naturalWidth || 800,
-				height: img?.naturalHeight || 600,
-				alt: img?.alt || ''
+				...itemData,
+				src: img?.src || itemData.src || '',
+				width: img?.naturalWidth || itemData.width || 800,
+				height: img?.naturalHeight || itemData.height || 600,
+				alt: img?.alt || itemData.alt || ''
 			};
 		});
 

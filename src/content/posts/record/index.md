@@ -1,15 +1,10 @@
 ---
 title: "记录"
 image: "https://api.yppp.net/pc.php"
-published: 2026-05-06T10:00:00
+published: 2026-05-06
 pinned: true
 description: "把日常片段留下来，也把当时的心情留下来。"
 toc: false
-tags:
-  - 记录
-  - 日常
-categories:
-  - 随笔
 draft: false
 ---
 

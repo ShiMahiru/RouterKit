@@ -10,8 +10,10 @@ export default defineConfig({
 			name: 'html-inject',
 			transformIndexHtml(html) {
 				return html
-					.replace('__DESCRIPTION__', siteConfig.description)
-					.replace('__ICON__', siteConfig.icon);
+					.replaceAll('__TITLE__', siteConfig.title)
+					.replaceAll('__DESCRIPTION__', siteConfig.description)
+					.replaceAll('__URL__', siteConfig.url)
+					.replaceAll('__ICON__', siteConfig.icon);
 			}
 		}
 	],

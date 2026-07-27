@@ -15,8 +15,10 @@ export default function ArchivesPage() {
 	const posts = useMemo(() => getDisplayPosts(), []);
 
 	useEffect(() => {
-		document.title = `归档 - ${siteConfig.title}`;
-	}, []);
+	document.title = `归档 - ${siteConfig.title}`;
+	const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+	if (canonical) canonical.href = `${siteConfig.url}/archives/`;
+}, []);
 
 	const groups = useMemo(() => {
 		const years = new Map<number, Map<string, typeof posts>>();

@@ -1,15 +1,10 @@
 ---
 title: "雨后的街角"
 image: ""
-published: 2026-05-06T11:00:00
+published: 2026-05-06
 pinned: false
 description: "雨停之后，街角重新亮起来。"
 toc: true
-tags:
-  - 城市
-  - 日常
-categories:
-  - 随笔
 draft: false
 ---
 

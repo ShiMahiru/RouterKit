@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router';
 import type { Post } from '@/types/post';
 import { countPostWords } from '@/utils/posts';
@@ -13,6 +13,13 @@ const POSTS_PER_PAGE = 10;
 export default function PaperPostList({ posts }: Props) {
 	const [currentPage, setCurrentPage] = useState(1);
 	const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+
+	// 当文章数量变化导致当前页越界时，重置到最后一页
+	useEffect(() => {
+		if (currentPage > totalPages && totalPages > 0) {
+			setCurrentPage(totalPages);
+		}
+	}, [totalPages, currentPage]);
 	const paginatedPosts = useMemo(
 		() => posts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE),
 		[posts, currentPage]

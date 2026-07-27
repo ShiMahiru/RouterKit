@@ -17,7 +17,9 @@ let mermaidPromise: Promise<MermaidLike> | null = null;
 let currentTheme: 'light' | 'dark' | null = null;
 
 function getTheme(): 'light' | 'dark' {
-	return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+	const theme = document.documentElement.dataset.theme;
+	if (theme === 'dark' || theme === 'light') return theme;
+	return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 function log(...args: unknown[]) {

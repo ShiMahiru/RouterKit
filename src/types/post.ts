@@ -5,10 +5,7 @@ export interface PostMetadata {
 	pinned: boolean;
 	description: string;
 	draft?: boolean;
-	updated?: string;
 	toc?: boolean;
-	tags?: string[];
-	categories?: string[];
 }
 
 export interface Post {

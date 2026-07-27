@@ -3,24 +3,31 @@ import { Link } from 'react-router';
 import { siteConfig } from '@/config';
 import { getDisplayPosts, createPostSearchText } from '@/utils/posts';
 
+function normalize(v: string) { return v.trim().toLowerCase(); }
+
 export default function SearchPage() {
 	const posts = useMemo(() => getDisplayPosts(), []);
+	// 预计算每篇文章的搜索文本，避免每次过滤时重复计算
+	const indexedPosts = useMemo(
+		() => posts.map(post => ({ post, searchText: createPostSearchText(post) })),
+		[posts]
+	);
 	const [query, setQuery] = useState('');
 
 	useEffect(() => {
-		document.title = `搜索 - ${siteConfig.title}`;
-	}, []);
+	document.title = `搜索 - ${siteConfig.title}`;
+	const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+	if (canonical) canonical.href = `${siteConfig.url}/search/`;
+}, []);
 
-	const normalize = (v: string) => v.trim().toLowerCase();
 	const term = normalize(query);
 
 	const results = useMemo(() => {
 		if (!term) return [];
-		return posts.filter(post => {
-			const haystack = createPostSearchText(post);
-			return haystack.includes(term);
-		});
-	}, [posts, term]);
+		return indexedPosts
+			.filter(({ searchText }) => searchText.includes(term))
+			.map(({ post }) => post);
+	}, [indexedPosts, term]);
 
 	return (
 		<main className="pm-main">

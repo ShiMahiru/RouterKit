@@ -10,8 +10,10 @@ export default function PostsPage() {
 	const isHome = pathname === '/';
 
 	useEffect(() => {
-		document.title = isHome ? siteConfig.title : `文章列表 - ${siteConfig.title}`;
-	}, [isHome]);
+	document.title = isHome ? siteConfig.title : `文章列表 - ${siteConfig.title}`;
+	const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+	if (canonical) canonical.href = isHome ? siteConfig.url : `${siteConfig.url}/posts/`;
+}, [isHome]);
 
 	return (
 		<main className="pm-main pm-list-main">

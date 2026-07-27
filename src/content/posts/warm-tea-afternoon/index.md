@@ -1,15 +1,10 @@
 ---
 title: "一杯热茶的下午"
 image: ""
-published: 2026-05-06T12:00:00
+published: 2026-05-06
 pinned: false
 description: "在普通下午里，给自己留一点安静。"
 toc: true
-tags:
-  - 生活
-  - 片刻
-categories:
-  - 随笔
 draft: false
 ---
 

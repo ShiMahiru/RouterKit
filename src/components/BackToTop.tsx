@@ -14,7 +14,8 @@ export default function BackToTop() {
 	function scrollToTop(e: React.MouseEvent) {
 		e.preventDefault();
 		window.scrollTo({ top: 0, behavior: 'smooth' });
-		history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+		// 清除 URL 中的 hash 锚点
+		history.replaceState(history.state, '', `${window.location.pathname}${window.location.search}`);
 	}
 
 	return (

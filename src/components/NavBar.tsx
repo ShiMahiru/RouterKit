@@ -17,6 +17,8 @@ function preferredTheme(): 'light' | 'dark' {
 function applyTheme(theme: 'light' | 'dark') {
 	document.documentElement.dataset.theme = theme;
 	document.documentElement.classList.toggle('dark', theme === 'dark');
+	const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+	if (meta) meta.content = theme === 'dark' ? '#1d1e20' : '#ffffff';
 }
 
 export default function NavBar() {
@@ -91,7 +93,7 @@ export default function NavBar() {
 					</li>
 					{navItems.map(item => (
 						<li key={item.href}>
-							{'external' in item ? (
+							{'external' in item && item.external ? (
 								<a href={item.href} title={item.label}><span>{item.label}</span></a>
 							) : (
 								<Link to={item.href} title={item.label}><span>{item.label}</span></Link>

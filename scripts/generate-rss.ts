@@ -1,10 +1,11 @@
-// Build-time RSS generation — auto-reads config from siteConfig
+// Build-time static file generation: RSS, sitemap.xml, robots.txt
 import { Feed } from 'feed';
 import MarkdownIt from 'markdown-it';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { siteConfig } from '../src/config.ts';
+import { parseFrontmatter, comparePostByPinnedAndDate } from '../src/utils/frontmatter.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
@@ -15,45 +16,6 @@ const SITE_DESC = siteConfig.description;
 const SITE_LANG = 'zh-CN';
 
 const md = new MarkdownIt({ html: true, linkify: true, breaks: true });
-
-// ---- Parse frontmatter ----
-function parseFrontmatter(raw: string): { metadata: Record<string, unknown>; content: string } {
-	const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
-	if (!match) return { metadata: {}, content: raw };
-	const body = raw.slice(match[0].length).trim();
-	const meta: Record<string, unknown> = {};
-	const lines = match[1].split('\n');
-	let collectingKey: string | null = null;
-	let collectingList: string[] = [];
-
-	for (const line of lines) {
-		if (collectingKey) {
-			const listItem = line.match(/^\s+-\s+(.*)$/);
-			if (listItem) {
-				const item = listItem[1].trim().replace(/^["']|["']$/g, '');
-				if (item) collectingList.push(item);
-				continue;
-			}
-			meta[collectingKey] = collectingList;
-			collectingKey = null;
-			collectingList = [];
-		}
-		const kv = line.match(/^(\w[\w-]*):\s*(.*)$/);
-		if (!kv) continue;
-		const key = kv[1].trim();
-		let val: unknown = kv[2].trim();
-		if (val === 'true' || val === 'false') { meta[key] = val === 'true'; continue; }
-		if (typeof val === 'string' && val.startsWith('[') && val.endsWith(']')) {
-			meta[key] = (val as string).slice(1, -1).split(',').map(s => s.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
-			continue;
-		}
-		if (val === '') { collectingKey = key; collectingList = []; continue; }
-		if (typeof val === 'string' && ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))) val = (val as string).slice(1, -1);
-		meta[key] = val;
-	}
-	if (collectingKey) meta[collectingKey] = collectingList;
-	return { metadata: meta, content: body };
-}
 
 // ---- Strip invalid XML chars ----
 function stripInvalidXmlChars(str: string): string {
@@ -67,19 +29,18 @@ const postDirs = fs.readdirSync(postsDir).filter(name => {
 	return fs.statSync(d).isDirectory() && fs.existsSync(path.join(d, 'index.md'));
 });
 
-interface Post {
+// 扁平化的文章结构，与 src/types/post.ts 的 Post 保持字段对应
+interface FlatPost {
 	slug: string;
 	title: string;
 	description: string;
 	published: string;
-	updated?: string;
 	pinned: boolean;
 	content: string;
 	image: string;
-	tags: string[];
 }
 
-const posts: Post[] = [];
+const posts: FlatPost[] = [];
 for (const slug of postDirs) {
 	const raw = fs.readFileSync(path.join(postsDir, slug, 'index.md'), 'utf8');
 	const { metadata, content } = parseFrontmatter(raw);
@@ -89,19 +50,13 @@ for (const slug of postDirs) {
 		title: (metadata.title as string) || slug,
 		description: (metadata.description as string) || '',
 		published: (metadata.published as string) || new Date(0).toISOString(),
-		updated: metadata.updated as string | undefined,
 		pinned: (metadata.pinned as boolean) ?? false,
 		content,
-		image: (metadata.image as string) || '',
-		tags: [...(metadata.tags as string[] || []), ...(metadata.categories as string[] || [])]
+		image: (metadata.image as string) || ''
 	});
 }
 
-posts.sort((a, b) => {
-	if (a.pinned && !b.pinned) return -1;
-	if (!a.pinned && b.pinned) return 1;
-	return new Date(b.published).getTime() - new Date(a.published).getTime();
-});
+posts.sort((a, b) => comparePostByPinnedAndDate(a, b));
 
 // ---- Generate RSS ----
 const feed = new Feed({
@@ -111,9 +66,9 @@ const feed = new Feed({
 	link: SITE_URL,
 	language: SITE_LANG,
 	favicon: siteConfig.icon,
-	copyright: `All rights reserved ${new Date().getFullYear()}, Yuln`,
+	copyright: `All rights reserved ${new Date().getFullYear()}, ${siteConfig.headerTitle}`,
 	feedLinks: { rss: `${SITE_URL}/rss.xml` },
-	author: { name: 'Yuln', link: SITE_URL }
+	author: { name: siteConfig.headerTitle, link: SITE_URL }
 });
 
 for (const post of posts) {
@@ -125,17 +80,68 @@ for (const post of posts) {
 	);
 
 	feed.addItem({
-		title: post.title,
-		id: `${SITE_URL}/posts/${post.slug}/`,
-		link: `${SITE_URL}/posts/${post.slug}/`,
-		description: post.description || post.title,
-		content: html,
-		date: new Date(post.published),
-		categories: post.tags
-	});
+	title: post.title,
+	id: `${SITE_URL}/posts/${post.slug}/`,
+	link: `${SITE_URL}/posts/${post.slug}/`,
+	description: post.description || post.title,
+	content: html,
+	date: new Date(post.published || 0)
+});
 }
 
 const buildDir = path.join(projectRoot, 'build');
 fs.mkdirSync(buildDir, { recursive: true });
 fs.writeFileSync(path.join(buildDir, 'rss.xml'), feed.rss2(), 'utf8');
-console.log('[generate-rss] rss.xml generated');
+console.log('[generate-static] rss.xml generated');
+
+// ---- Generate sitemap.xml ----
+const staticPages = [
+	{ loc: SITE_URL, priority: '1.0', changefreq: 'daily' },
+	{ loc: `${SITE_URL}/posts`, priority: '0.9', changefreq: 'daily' },
+	{ loc: `${SITE_URL}/archives`, priority: '0.8', changefreq: 'weekly' },
+	{ loc: `${SITE_URL}/search`, priority: '0.5', changefreq: 'monthly' }
+];
+
+const sitemapEntries = [
+	...staticPages,
+	...posts.map(post => ({
+		loc: `${SITE_URL}/posts/${post.slug}/`,
+		lastmod: post.published,
+		priority: '0.7',
+		changefreq: 'weekly' as const
+	}))
+];
+
+function escapeXml(s: string): string {
+	return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemapEntries.map(e => {
+	const parts = [
+		`\t<loc>${escapeXml(e.loc)}</loc>`,
+	];
+	if ('lastmod' in e && e.lastmod) {
+		parts.push(`\t<lastmod>${escapeXml(e.lastmod)}</lastmod>`);
+	}
+	parts.push(
+		`\t<changefreq>${escapeXml(e.changefreq)}</changefreq>`,
+		`\t<priority>${escapeXml(e.priority)}</priority>`,
+	);
+	return `\t<url>\n${parts.join('\n')}\n\t</url>`;
+}).join('\n')}
+</urlset>
+`;
+
+fs.writeFileSync(path.join(buildDir, 'sitemap.xml'), sitemap, 'utf8');
+console.log('[generate-static] sitemap.xml generated');
+
+// ---- Generate robots.txt ----
+const robots = `User-agent: *
+Allow: /
+Sitemap: ${SITE_URL}/sitemap.xml
+`;
+
+fs.writeFileSync(path.join(buildDir, 'robots.txt'), robots, 'utf8');
+console.log('[generate-static] robots.txt generated');

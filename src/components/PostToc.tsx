@@ -101,7 +101,7 @@ export default function PostToc({ container, trigger }: Props) {
 		e.preventDefault();
 		const top = el.getBoundingClientRect().top + window.scrollY - 72;
 		window.scrollTo({ top, behavior: 'smooth' });
-		history.replaceState(null, '', `#${id}`);
+		history.replaceState(history.state, '', `#${id}`);
 	}
 
 	if (headings.length === 0) return null;
