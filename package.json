@@ -9,7 +9,7 @@
 	},
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build && node scripts/generate-rss.js",
+		"build": "vite build && node --experimental-strip-types scripts/generate-rss.ts",
 		"preview": "vite preview",
 		"check": "tsc --noEmit",
 		"check:watch": "tsc --noEmit --watch"

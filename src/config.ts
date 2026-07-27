@@ -1,4 +1,5 @@
 export const siteConfig = {
+	url: 'https://blog.242531778.xyz',
 	title: '博客 | Yuln',
 	headerTitle: 'Yuln',
 	description: 'Yuln 的个人技术博客，专注于 IT / 互联网技术分享与实践。',
