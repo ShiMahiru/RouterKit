@@ -6,37 +6,16 @@
 	--pm-main-width: 800px;
 	--pm-header-height: 60px;
 	--pm-footer-height: 60px;
-	--pm-radius: 0.75rem;
-
-	/* Fuwari color system */
-	--primary: oklch(0.70 0.14 var(--hue));
-	--page-bg: oklch(0.95 0.01 var(--hue));
-	--card-bg: white;
-
-	--pm-theme: var(--page-bg);
-	--pm-entry: var(--card-bg);
-	--pm-primary: oklch(0.25 0.02 var(--hue));
-	--pm-secondary: oklch(0.55 0.02 var(--hue));
-	--pm-tertiary: oklch(0.80 0.01 var(--hue));
-	--pm-content: oklch(0.30 0.02 var(--hue));
-	--pm-border: oklch(0.88 0.01 var(--hue));
-
-	/* Code blocks — light */
-	--codeblock-bg: oklch(0.99 0.01 var(--hue));
-	--codeblock-topbar-bg: oklch(0.95 0.01 var(--hue));
-	--pm-code-block-bg: var(--codeblock-bg);
-	--pm-code-bg: oklch(0.92 0.01 var(--hue));
-	--inline-code-bg: oklch(0.92 0.025 var(--hue));
-	--inline-code-color: oklch(0.55 0.12 var(--hue));
-
-	--code-fg: oklch(0.25 0.02 var(--hue));
-	--code-gutter-fg: oklch(0.60 0.02 var(--hue));
-	--code-gutter-border: oklch(0.60 0.02 var(--hue) / 0.2);
-	--code-badge-bg: oklch(0.90 0.02 var(--hue));
-	--code-badge-fg: oklch(0.45 0.1 var(--hue));
-	--code-copy-fg: oklch(0.45 0.1 var(--hue) / 0.6);
-	--code-copy-hover-bg: oklch(0.90 0.02 var(--hue));
-	--code-scrollbar: oklch(0.75 0.02 var(--hue));
+	--pm-radius: 8px;
+	--pm-theme: rgb(255, 255, 255);
+	--pm-entry: rgb(255, 255, 255);
+	--pm-primary: rgb(30, 30, 30);
+	--pm-secondary: rgb(108, 108, 108);
+	--pm-tertiary: rgb(214, 214, 214);
+	--pm-content: rgb(31, 31, 31);
+	--pm-code-block-bg: rgb(28, 29, 33);
+	--pm-code-bg: rgb(245, 245, 245);
+	--pm-border: rgb(238, 238, 238);
 
 	color-scheme: light;
 }
