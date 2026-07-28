@@ -3,7 +3,6 @@ import type { LoaderFunctionArgs } from "react-router";
 import { useCallback, useState, useMemo } from "react";
 import { Link } from "react-router";
 import DOMPurify from "isomorphic-dompurify";
-import hljs from "highlight.js";
 import { siteConfig } from "@/config";
 import ArticleHeader from "@/components/article/ArticleHeader";
 import ImageViewer from "@/components/article/ImageViewer";
@@ -13,32 +12,6 @@ import SearchHighlight, { parseQueryTerms } from "@/components/search/SearchHigh
 import { resolvePostAssetPath } from "@/utils/markdown";
 import { loadAllPosts, renderPostHtml, createMarkdownRenderer } from "../../lib/posts-loader";
 import { renderMermaidInHtml } from "../../lib/mermaid-renderer";
-
-function highlightCodeInHtml(html: string): string {
-  return html.replace(
-    /<pre><code(?:\s+class="([^"]*)")?>([\s\S]*?)<\/code><\/pre>/g,
-    (_match, className, code) => {
-      const lang = className?.match(/language-(\w+)/)?.[1] || "";
-      const decoded = code
-        .replace(/&amp;/g, "&")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'");
-      let result: string;
-      try {
-        if (lang && hljs.getLanguage(lang)) {
-          result = hljs.highlight(decoded, { language: lang }).value;
-        } else {
-          result = hljs.highlightAuto(decoded).value;
-        }
-      } catch {
-        result = decoded;
-      }
-      return `<pre><code class="hljs ${className || ""}">${result}</code></pre>`;
-    }
-  );
-}
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const posts = loadAllPosts();
@@ -68,8 +41,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
       "marker-end", "marker-start", "xmlns",
     ],
   });
-
-  html = highlightCodeInHtml(html);
 
   return {
     post: {
@@ -165,7 +136,7 @@ export default function PostDetail() {
           </footer>
 
           <div id="comments">
-            <Giscus key={post.slug} />
+            <Giscus slug={post.slug} />
           </div>
         </article>
       </main>

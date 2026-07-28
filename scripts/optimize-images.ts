@@ -19,6 +19,7 @@ const RASTER_EXTS = new Set(['.png', '.jpg', '.jpeg', '.gif']);
 const WEBP_QUALITY = 80;
 const JPEG_QUALITY = 85;
 const MAX_WIDTH = 2400;
+const CONCURRENCY = 4;
 
 interface ImageFile {
 	fullPath: string;
@@ -156,24 +157,33 @@ async function main() {
 	let skipped = 0;
 	let errors = 0;
 
-	const results = await Promise.allSettled(
-		images.map(async (img) => {
-			const processed = await processImage(img, cache);
-			done++;
-			if (processed) {
-				console.log(`  [${done}/${images.length}] ${img.slug}/${img.filename}`);
-			} else {
-				skipped++;
-			}
-		})
-	);
+	const queue = [...images];
+	let index = 0;
 
-	for (const r of results) {
-		if (r.status === 'rejected') {
-			console.error('[optimize-images] error:', r.reason);
-			errors++;
+	async function worker() {
+		while (index < images.length) {
+			const i = index++;
+			const img = images[i];
+			try {
+				const processed = await processImage(img, cache);
+				done++;
+				if (processed) {
+					console.log(`  [${done}/${images.length}] ${img.slug}/${img.filename}`);
+				} else {
+					skipped++;
+				}
+			} catch (err) {
+				errors++;
+				console.error('[optimize-images] error:', err);
+			}
 		}
 	}
+
+	const workers = Array.from(
+		{ length: Math.min(CONCURRENCY, images.length) },
+		() => worker()
+	);
+	await Promise.all(workers);
 
 	writeCache(cache);
 

@@ -5,11 +5,11 @@ import { siteConfig } from "@/config";
 import { loadAllPosts } from "../../lib/posts-loader";
 import type { Post } from "@/types/post";
 import { resolvePostAssetPath } from "@/utils/markdown";
+import { countPostWords } from "@/utils/posts";
 
-export const meta: MetaFunction = ({ location }) => {
-  const isHome = location.pathname === "/";
-  const title = isHome ? siteConfig.title : `文章列表 - ${siteConfig.title}`;
-  const url = isHome ? siteConfig.url : `${siteConfig.url}/posts/`;
+export const meta: MetaFunction = () => {
+  const title = siteConfig.title;
+  const url = siteConfig.url;
   return [
     { title },
     { name: "description", content: siteConfig.description },
@@ -34,7 +34,13 @@ export async function loader() {
       image: resolvePostAssetPath(p.slug, p.metadata.image),
     },
     html: "",
-    rawContent: p.content,
+    rawContent: "",
+    wordCount: countPostWords({
+      slug: p.slug,
+      metadata: p.metadata,
+      html: "",
+      rawContent: p.content,
+    }),
   }));
 
   return { posts: displayPosts };

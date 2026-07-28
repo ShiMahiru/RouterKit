@@ -16,23 +16,33 @@ export const meta: MetaFunction = () => [
 
 export async function loader() {
   const posts = loadAllPosts();
-  return {
-    posts: posts.map(p => ({
+  const searchItems = posts.map(p => ({
+    slug: p.slug,
+    title: p.metadata.title,
+    description: p.metadata.description,
+    searchText: createPostSearchText({
       slug: p.slug,
-      title: p.metadata.title,
-      description: p.metadata.description,
-      searchText: createPostSearchText({
-        slug: p.slug,
-        metadata: p.metadata,
-        html: "",
-        rawContent: p.content,
-      }),
-    })),
+      metadata: p.metadata,
+      html: "",
+      rawContent: p.content,
+    }),
+  }));
+
+  const ms = new MiniSearch({
+    fields: ["title", "description", "searchText"],
+    storeFields: ["title", "description", "slug"],
+    searchOptions: { prefix: true, fuzzy: 0.2 },
+  });
+  ms.addAll(searchItems.map((p, i) => ({ ...p, id: i })));
+
+  return {
+    posts: searchItems,
+    searchIndex: ms.toJSON(),
   };
 }
 
 export default function Search() {
-  const { posts } = useLoaderData<typeof loader>();
+  const { posts, searchIndex } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
@@ -40,14 +50,12 @@ export default function Search() {
 
   const searcher = useRef<MiniSearch | null>(null);
   useEffect(() => {
-    const ms = new MiniSearch({
+    searcher.current = MiniSearch.loadJSON(JSON.stringify(searchIndex), {
       fields: ["title", "description", "searchText"],
       storeFields: ["title", "description", "slug"],
       searchOptions: { prefix: true, fuzzy: 0.2 },
     });
-    ms.addAll(posts.map((p, i) => ({ ...p, id: i })));
-    searcher.current = ms;
-  }, [posts]);
+  }, [searchIndex]);
 
   useEffect(() => {
     if (!query.trim() || !searcher.current) {

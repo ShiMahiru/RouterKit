@@ -23,7 +23,7 @@ export default function ArticleHeader({ post }: Props) {
 			<div className="pm-post-meta">
 				<span title={post.metadata.published}>{formatDate(post.metadata.published)}</span>
 				&nbsp;·&nbsp;
-				<span>{countPostWords(post)} 字</span>
+				<span>{post.wordCount ?? countPostWords(post)} 字</span>
 			</div>
 		</header>
 	);

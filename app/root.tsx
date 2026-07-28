@@ -6,6 +6,8 @@ import {
   ScrollRestoration,
 } from "react-router";
 
+import "highlight.js/styles/github-dark.css";
+
 import "@/styles/theme.css";
 import "@/styles/base.css";
 import "@/styles/layout.css";

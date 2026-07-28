@@ -13,6 +13,7 @@ export interface Post {
 	metadata: PostMetadata;
 	html: string;
 	rawContent: string;
+	wordCount?: number;
 }
 
 export interface LoadedPost {

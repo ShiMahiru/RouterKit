@@ -52,7 +52,7 @@ export default function PaperPostList({ posts }: Props) {
             {post.metadata.pinned && <>&nbsp;·&nbsp;</>}
             <span title={post.metadata.published}>{formatDate(post.metadata.published)}</span>
             &nbsp;·&nbsp;
-            <span>{countPostWords(post)} 字</span>
+            <span>{post.wordCount ?? countPostWords(post)} 字</span>
           </footer>
 
           <Link className="pm-entry-link" aria-label={`文章链接：${post.metadata.title}`} to={`/posts/${post.slug}`}></Link>

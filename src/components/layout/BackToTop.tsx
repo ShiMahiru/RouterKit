@@ -15,7 +15,9 @@ export default function BackToTop() {
 		e.preventDefault();
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 
-		history.replaceState(history.state, '', `${window.location.pathname}${window.location.search}`);
+		if (window.location.hash) {
+			history.replaceState(history.state, '', `${window.location.pathname}${window.location.search}`);
+		}
 	}
 
 	return (

@@ -1,5 +1,5 @@
 {
-  "name": "vitekit-blog",
+  "name": "routerkit",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "react-router dev",
+    "prebuild": "rm -rf build/",
     "build": "react-router build && tsx scripts/optimize-images.ts && tsx scripts/generate-static.ts",
     "preview": "react-router-serve build/server/index.js",
     "check": "tsc --noEmit",
