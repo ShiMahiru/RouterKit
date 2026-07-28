@@ -6,7 +6,7 @@ export const siteConfig = {
 	icon: 'https://q2.qlogo.cn/headimg_dl?dst_uin=242531778&spec=0',
 	giscus: {
 		src: 'https://giscus.app/client.js',
-		repo: 'ShiMahiru/bolg-Giscus',
+		repo: 'ShiMahiru/blog-Giscus',
 		repoId: 'R_kgDOR_rqPw',
 		category: 'Announcements',
 		categoryId: 'DIC_kwDOR_rqP84C6l8B',
