@@ -227,10 +227,6 @@
 	font-size: 14px;
 }
 
-.pm-search-empty {
-	color: var(--pm-secondary);
-}
-
 /* Responsive */
 @media screen and (max-width: 768px) {
 	:root {

@@ -1,11 +1,7 @@
 {
-	"$schema": "https://openapi.vercel.sh/vercel.json",
-	"framework": "vite",
-	"installCommand": "pnpm install",
-	"buildCommand": "pnpm run build",
-	"outputDirectory": "build",
-	"trailingSlash": true,
-	"rewrites": [
-		{ "source": "/((?!assets/|rss\\.xml|sitemap\\.xml|robots\\.txt).*)", "destination": "/index.html" }
-	]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "build/client",
+  "trailingSlash": true
 }

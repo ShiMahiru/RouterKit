@@ -1,14 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { siteConfig } from '@/config';
+import { getResolvedTheme } from '@/utils/theme';
 
 const giscus = siteConfig.giscus;
 const maxAttempts = 5;
-
-function resolvedTheme() {
-	const theme = document.documentElement.dataset.theme;
-	if (theme === 'dark' || theme === 'light') return theme;
-	return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
 
 export default function Giscus() {
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -22,7 +17,7 @@ export default function Giscus() {
 		const iframe = containerRef.current?.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
 		if (!iframe?.contentWindow) return;
 		iframe.contentWindow.postMessage(
-			{ giscus: { setConfig: { theme: resolvedTheme() } } },
+			{ giscus: { setConfig: { theme: getResolvedTheme() } } },
 			'https://giscus.app'
 		);
 	}
@@ -68,7 +63,7 @@ export default function Giscus() {
 		script.setAttribute('data-reactions-enabled', giscus.reactionsEnabled);
 		script.setAttribute('data-emit-metadata', giscus.emitMetadata);
 		script.setAttribute('data-input-position', giscus.inputPosition);
-		script.setAttribute('data-theme', resolvedTheme());
+		script.setAttribute('data-theme', getResolvedTheme());
 		script.setAttribute('data-lang', giscus.lang);
 		script.setAttribute('data-loading', giscus.loading);
 		script.setAttribute('crossorigin', 'anonymous');

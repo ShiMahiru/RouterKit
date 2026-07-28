@@ -15,10 +15,9 @@ export interface Post {
 	rawContent: string;
 }
 
-/** 虚拟模块 virtual:posts-data 导出的预编译文章结构 */
-export interface PrecompiledPost {
+/** 从文件系统加载的文章原始数据（markdown 正文，不含 frontmatter） */
+export interface LoadedPost {
 	slug: string;
 	metadata: PostMetadata;
-	html: string;
-	rawContent: string;
+	content: string;
 }

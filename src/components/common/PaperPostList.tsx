@@ -63,7 +63,7 @@ export default function PaperPostList({ posts }: Props) {
 				<footer className="pm-page-footer">
 					<nav className="pm-pagination" aria-label="分页">
 						{currentPage > 1 && (
-							<button className="pm-prev" type="button" onClick={() => setCurrentPage(p => p - 1)}>
+							<button type="button" onClick={() => setCurrentPage(p => p - 1)}>
 								«&nbsp;&nbsp;上一页
 							</button>
 						)}

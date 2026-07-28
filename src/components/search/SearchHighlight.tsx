@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 interface Props {
 	container: HTMLElement | null;
@@ -17,7 +17,6 @@ function parseQueryTerms(query: string): string[] {
 }
 
 export default function SearchHighlight({ container, terms }: Props) {
-	const doneRef = useRef(false);
 
 	useEffect(() => {
 		if (!container || terms.length === 0) return;
@@ -75,7 +74,6 @@ export default function SearchHighlight({ container, terms }: Props) {
 			textNode.replaceWith(frag);
 		}
 
-		doneRef.current = true;
 		// 滚动到第一个高亮
 		setTimeout(() => {
 			const firstMark = container.querySelector('mark.search-highlight');

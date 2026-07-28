@@ -176,6 +176,7 @@
 	max-width: 100%;
 	margin: 1rem 0;
 	border-radius: var(--pm-radius);
+	cursor: pointer;
 }
 
 .pm-post-content table {

@@ -1,3 +1,31 @@
+import YAML from 'yaml';
+
+/**
+ * 解析 markdown frontmatter（YAML 格式）。
+ * 使用 yaml 库替代手写解析器，更健壮地处理各种 YAML 语法。
+ */
+export function parseFrontmatter(raw: string): { metadata: Record<string, unknown>; content: string } {
+	const match = raw.match(/^---\r?\n([\s\S]*?)---(?:\r?\n|$)/);
+	if (!match) return { metadata: {}, content: raw };
+
+	const content = raw.slice(match[0].length).trim();
+	const parsed = YAML.parse(match[1]);
+
+	// YAML 解析可能返回 null 或非对象
+	const rawMeta: Record<string, unknown> =
+		parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+			? { ...parsed as Record<string, unknown> }
+			: {};
+
+	// 将 Date 对象转为 ISO 日期字符串（如 published: 2026-05-06）
+	const metadata: Record<string, unknown> = {};
+	for (const [key, value] of Object.entries(rawMeta)) {
+		metadata[key] = value instanceof Date ? value.toISOString().slice(0, 10) : value;
+	}
+
+	return { metadata, content };
+}
+
 /** 文章排序比较器：置顶优先，然后按发布日期降序 */
 export function comparePostByPinnedAndDate(
 	a: { pinned: boolean; published: string },
@@ -11,58 +39,4 @@ export function comparePostByPinnedAndDate(
 	if (isNaN(ta)) return 1;
 	if (isNaN(tb)) return -1;
 	return tb - ta;
-}
-
-/**
- * 解析 markdown frontmatter（YAML 子集）。
- * 提取在 posts.ts 和 generate-rss.ts 之间共享。
- */
-export function parseFrontmatter(raw: string): { metadata: Record<string, unknown>; content: string } {
-	const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
-	if (!match) return { metadata: {}, content: raw };
-	const body = raw.slice(match[0].length).trim();
-	const meta: Record<string, unknown> = {};
-	const lines = match[1].split('\n');
-	let collectingKey: string | null = null;
-	let collectingList: string[] = [];
-
-	for (const line of lines) {
-		// 多行列表收集
-		if (collectingKey) {
-			const listItem = line.match(/^\s+-\s+(.*)$/);
-			if (listItem) {
-				let item = listItem[1].trim();
-				item = item.replace(/^["']|["']$/g, '');
-				if (item) collectingList.push(item);
-				continue;
-			}
-			// 列表结束
-			meta[collectingKey] = collectingList;
-			collectingKey = null;
-			collectingList = [];
-		}
-
-		const kv = line.match(/^(\w[\w-]*):\s*(.*)$/);
-		if (!kv) continue;
-		const key = kv[1].trim();
-		let val = kv[2].trim();
-
-		if (val === 'true' || val === 'false') { meta[key] = val === 'true'; continue; }
-		if (val.startsWith('[') && val.endsWith(']')) {
-			meta[key] = val.slice(1, -1).split(',').map(s => s.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
-			continue;
-		}
-		// 值为空 → 可能是多行列表的起始
-		if (val === '') {
-			collectingKey = key;
-			collectingList = [];
-			continue;
-		}
-		if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) val = val.slice(1, -1);
-		meta[key] = val;
-	}
-	if (collectingKey) {
-		meta[collectingKey] = collectingList;
-	}
-	return { metadata: meta, content: body };
 }

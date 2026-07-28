@@ -1,27 +1,49 @@
 # Yuln 的博客
 
-基于 React 19 + React Router 7 + Vite 8 的静态博客项目。文章使用 Markdown 编写，构建后输出为纯静态文件，可部署到 Vercel、Cloudflare Pages 或 Cloudflare Workers Static Assets。
+基于 React 19 + React Router 8 + Vite 8 的静态博客项目。文章使用 Markdown 编写，构建后输出为纯静态文件，可部署到 Vercel、Cloudflare Pages。
 
 ## 技术栈
 
 - React 19
-- React Router 7
+- React Router 8 (framework mode, prerender)
 - Vite 8
 - TypeScript
 - markdown-it
+- highlight.js (build-time)
+- mermaid (build-time)
 - PhotoSwipe
 - Giscus
 
 ## 目录
 
 ```text
+app/
+├── root.tsx                # 文档壳
+├── routes.ts               # 路由配置
+├── layout.tsx              # 页面布局（导航 + 页脚）
+└── routes/
+    ├── home.tsx            # 首页 & /posts
+    ├── post-detail.tsx     # 文章详情
+    ├── archives.tsx        # 归档
+    ├── search.tsx          # 搜索
+    ├── not-found.tsx       # 404
+    └── posts.tsx           # 重导出
+
+lib/                        # 共享逻辑
+├── posts-loader.ts         # 文章加载（loader & 构建脚本共用）
+├── text-utils.ts           # 文本处理
+└── mermaid-renderer.ts     # 构建时 Mermaid 渲染
+
 src/
-├── config.ts              # 站点标题、图标、Giscus 配置
-├── content/posts/         # Markdown 文章（每篇一个目录）
-├── components/            # 页面组件
-├── pages/                 # 路由页面
-├── utils/                 # 文章、Markdown、渲染工具
-└── types/                 # TypeScript 类型定义
+├── config.ts               # 站点配置
+├── content/posts/          # Markdown 文章
+├── components/             # 组件
+├── utils/                  # 工具函数
+└── types/                  # TypeScript 类型
+
+scripts/
+├── generate-static.ts      # RSS / sitemap / robots.txt / llms.txt
+└── optimize-images.ts      # 图片压缩 & WebP
 ```
 
 ## 开发
@@ -31,23 +53,23 @@ pnpm install
 pnpm run dev
 ```
 
-本地开发默认地址 `http://localhost:5173/`。
-
 ## 构建
 
 ```bash
 pnpm run build
 ```
 
-构建产物生成到 `build/`，包含 RSS、sitemap、robots.txt。
+构建产物生成到 `build/client/`，包含 RSS、sitemap、robots.txt、llms.txt。
 
 ## 部署
 
 ### Vercel
 
-项目已提供 `vercel.json`，导入 GitHub 仓库后即可部署。
+```json
+{ "outputDirectory": "build/client" }
+```
 
 ### Cloudflare Pages
 
 - Build command: `pnpm run build`
-- Output directory: `build`
+- Output directory: `build/client`

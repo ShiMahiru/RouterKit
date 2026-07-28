@@ -1,18 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router';
 import { siteConfig } from '@/config';
+import { getPreferredTheme } from '@/utils/theme';
 
 const navItems = [
 	{ label: '搜索', href: '/search' },
 	{ label: '归档', href: '/archives' },
 	{ label: 'RSS', href: '/rss.xml', external: true }
 ] as const;
-
-function preferredTheme(): 'light' | 'dark' {
-	const stored = localStorage.getItem('pref-theme');
-	if (stored === 'light' || stored === 'dark') return stored;
-	return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
 
 function applyTheme(theme: 'light' | 'dark') {
 	document.documentElement.dataset.theme = theme;
@@ -22,7 +17,7 @@ function applyTheme(theme: 'light' | 'dark') {
 }
 
 export default function NavBar() {
-	const [theme, setTheme] = useState<'light' | 'dark'>(preferredTheme);
+	const [theme, setTheme] = useState<'light' | 'dark'>(getPreferredTheme);
 
 	useEffect(() => {
 		applyTheme(theme);
@@ -48,7 +43,7 @@ export default function NavBar() {
 	}, []);
 
 	return (
-		<header className="pm-header">
+		<header>
 			<nav className="pm-header-nav">
 				<div className="pm-logo">
 					<Link to="/" title={siteConfig.headerTitle}>{siteConfig.headerTitle}</Link>

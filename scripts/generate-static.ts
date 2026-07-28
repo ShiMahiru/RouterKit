@@ -1,11 +1,14 @@
-// Build-time static file generation: RSS, sitemap.xml, robots.txt, llms.txt
+// Build-time static file generation: RSS, sitemap.xml, robots.txt, llms.txt, _headers
 import { Feed } from 'feed';
-import MarkdownIt from 'markdown-it';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { siteConfig } from '../src/config.ts';
-import { parseFrontmatter, comparePostByPinnedAndDate } from '../src/utils/frontmatter.ts';
+import {
+	loadAllPosts,
+	createMarkdownRenderer,
+	renderPostHtml,
+} from '../lib/posts-loader.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
@@ -15,49 +18,16 @@ const SITE_TITLE = siteConfig.title;
 const SITE_DESC = siteConfig.description;
 const SITE_LANG = 'zh-CN';
 
-const md = new MarkdownIt({ html: true, linkify: true, breaks: true });
-
 // ---- Strip invalid XML chars ----
 function stripInvalidXmlChars(str: string): string {
 	return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\uFDD0-\uFDEF\uFFFE\uFFFF]/g, '');
 }
 
-// ---- Load posts ----
-const postsDir = path.join(projectRoot, 'src/content/posts');
-const postDirs = fs.readdirSync(postsDir).filter(name => {
-	const d = path.join(postsDir, name);
-	return fs.statSync(d).isDirectory() && fs.existsSync(path.join(d, 'index.md'));
-});
+// ---- Load posts via shared module ----
+const posts = loadAllPosts();
+const md = createMarkdownRenderer();
 
-interface FlatPost {
-	slug: string;
-	title: string;
-	description: string;
-	published: string;
-	pinned: boolean;
-	content: string;
-	image: string;
-}
-
-const posts: FlatPost[] = [];
-for (const slug of postDirs) {
-	const raw = fs.readFileSync(path.join(postsDir, slug, 'index.md'), 'utf8');
-	const { metadata, content } = parseFrontmatter(raw);
-	if (metadata.draft) continue;
-	posts.push({
-		slug,
-		title: (metadata.title as string) || slug,
-		description: (metadata.description as string) || '',
-		published: (metadata.published as string) || new Date(0).toISOString(),
-		pinned: (metadata.pinned as boolean) ?? false,
-		content,
-		image: (metadata.image as string) || ''
-	});
-}
-
-posts.sort((a, b) => comparePostByPinnedAndDate(a, b));
-
-const buildDir = path.join(projectRoot, 'build');
+const buildDir = path.join(projectRoot, 'build', 'client');
 fs.mkdirSync(buildDir, { recursive: true });
 
 // ---- Generate RSS ----
@@ -75,19 +45,20 @@ const feed = new Feed({
 
 for (const post of posts) {
 	const safeContent = stripInvalidXmlChars(post.content);
-	let html = md.render(safeContent);
+	let html = renderPostHtml(safeContent, post.slug, md);
+	// RSS 中的图片需要完整 URL
 	html = html.replace(
-		/(<img[^>]+src=")(?!\/|https?:\/\/)([^"]+)(")/g,
-		(_, b, s, a) => `${b}${SITE_URL}/posts/${post.slug}/${s}${a}`
+		/(<img\s[^>]*?\bsrc=)("|')(?!\/|https?:\/\/)([^"']+)\2/gi,
+		(_, b, q, s) => `${b}${q}${SITE_URL}/posts/${post.slug}/${s}${q}`
 	);
 
 	feed.addItem({
-		title: post.title,
+		title: post.metadata.title,
 		id: `${SITE_URL}/posts/${post.slug}/`,
 		link: `${SITE_URL}/posts/${post.slug}/`,
-		description: post.description || post.title,
+		description: post.metadata.description || post.metadata.title,
 		content: html,
-		date: new Date(post.published || 0)
+		date: new Date(post.metadata.published || 0)
 	});
 }
 
@@ -106,7 +77,7 @@ const sitemapEntries = [
 	...staticPages,
 	...posts.map(post => ({
 		loc: `${SITE_URL}/posts/${post.slug}/`,
-		lastmod: post.published,
+		lastmod: post.metadata.published,
 		priority: '0.7',
 		changefreq: 'weekly' as const
 	}))
@@ -123,7 +94,7 @@ ${sitemapEntries.map(e => {
 		`\t<loc>${escapeXml(e.loc)}</loc>`,
 	];
 	if ('lastmod' in e && e.lastmod) {
-		parts.push(`\t<lastmod>${escapeXml(e.lastmod)}</lastmod>`);
+		parts.push(`\t<lastmod>${escapeXml(e.lastmod as string)}</lastmod>`);
 	}
 	parts.push(
 		`\t<changefreq>${escapeXml(e.changefreq)}</changefreq>`,
@@ -175,12 +146,12 @@ const llmsLines = [
 	'## 文章',
 	'',
 	...posts.map(post => {
-		const date = post.published ? new Date(post.published).toISOString().slice(0, 10) : '';
-		return `- [${post.title}](${SITE_URL}/posts/${post.slug}/) (${date})`;
+		const date = post.metadata.published ? new Date(post.metadata.published).toISOString().slice(0, 10) : '';
+		return `- [${post.metadata.title}](${SITE_URL}/posts/${post.slug}/) (${date})`;
 	}),
 	'',
 	'## 关于',
-	`本博客由 ${siteConfig.headerTitle} 维护，使用 React + Vite 构建。`,
+	`本博客由 ${siteConfig.headerTitle} 维护，使用 React Router + Vite 构建。`,
 	`RSS: ${SITE_URL}/rss.xml`,
 	`Sitemap: ${SITE_URL}/sitemap.xml`,
 	''

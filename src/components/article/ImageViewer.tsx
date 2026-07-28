@@ -21,11 +21,6 @@ export default function ImageViewer() {
 			};
 		});
 
-		lightbox.on('uiRegister', () => {
-			const images = document.querySelectorAll<HTMLImageElement>('.pm-post-content img');
-			images.forEach(img => { img.style.cursor = 'pointer'; });
-		});
-
 		lightbox.init();
 
 		return () => { lightbox.destroy(); };
