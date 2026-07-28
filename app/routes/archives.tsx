@@ -50,7 +50,7 @@ export default function Archives() {
                   <h3 className="pm-archive-month-header">{month}</h3>
                   <div className="pm-archive-entries">
                     {monthPosts.map(post => {
-                      const day = new Date(post.published).toLocaleDateString("zh-CN", { month: "2-digit", day: "2-digit" });
+                      const day = new Date(post.published).toLocaleDateString("zh-CN", { day: "2-digit" });
                       return (
                         <article key={post.slug} className="pm-archive-entry">
                           <div className="pm-archive-meta">{day}</div>

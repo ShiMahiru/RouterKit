@@ -16,7 +16,7 @@ const projectRoot = path.resolve(__dirname, '..');
 const SITE_URL = siteConfig.url;
 const SITE_TITLE = siteConfig.title;
 const SITE_DESC = siteConfig.description;
-const SITE_LANG = 'zh-CN';
+const SITE_LANG = siteConfig.lang;
 
 function stripInvalidXmlChars(str: string): string {
 	return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\uFDD0-\uFDEF\uFFFE\uFFFF]/g, '');
@@ -46,7 +46,7 @@ for (const post of posts) {
 
 	html = html.replace(
 		/(<img\s[^>]*?\bsrc=)("|')(?!\/|https?:\/\/)([^"']+)\2/gi,
-		(_, b, q, s) => `${b}${q}${SITE_URL}/posts/${post.slug}/${s}${q}`
+		(_, b, q, s) => `${b}${q}${SITE_URL}/posts/${s}${q}`
 	);
 
 	feed.addItem({

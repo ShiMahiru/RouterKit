@@ -143,24 +143,120 @@
 	border-radius: 0.2rem;
 }
 
-.pm-post-content pre {
-	position: relative;
-	max-width: 100%;
+.expressive-code {
+	font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	font-size: 0.9rem;
+	font-weight: 400;
+	line-height: 1.65;
 	margin-bottom: var(--pm-content-gap);
-	background: var(--pm-code-block-bg);
+}
+.expressive-code .frame { all: unset; display: block; }
+
+.pm-code-block {
+	position: relative;
+	display: flex;
+	margin: 0;
+	padding: 0;
+	border: 1px solid var(--pm-border);
 	border-radius: var(--pm-radius);
+	background: var(--codeblock-bg);
 	overflow-x: auto;
+}
+.pm-code-block:focus-visible { outline: 3px solid var(--primary); outline-offset: -3px; }
+
+.pm-code-block > code {
+	all: unset;
+	display: block;
+	flex: 1 0 100%;
+	padding: 1rem 0;
+	color: var(--code-fg);
+	font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.5rem;
 }
 
-.pm-post-content pre code {
+.ec-line {
+	direction: ltr;
+	unicode-bidi: isolate;
 	display: grid;
-	margin: auto 0;
-	padding: 10px;
-	color: #d5d5d6;
-	background: var(--pm-code-block-bg);
-	border-radius: var(--pm-radius);
-	overflow-x: auto;
+	grid-template-areas: 'gutter code';
+	grid-template-columns: auto 1fr;
+	position: relative;
 }
+.ec-line .gutter {
+	grid-area: gutter;
+	color: var(--code-gutter-fg);
+	padding-inline: 0.8rem 1ch;
+	user-select: none;
+	-webkit-user-select: none;
+	text-align: right;
+	min-width: 2ch;
+}
+.ec-line .ln { pointer-events: none; }
+.ec-line .code {
+	grid-area: code;
+	position: relative;
+	padding-inline: 1.35rem;
+	border-inline-start: 1.5px solid var(--code-gutter-border);
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+/* Language badge — ported from Fuwari plugin-language-badge */
+.pm-code-block[data-language]::before {
+	content: attr(data-language);
+	position: absolute;
+	z-index: 2;
+	right: 2.5rem;
+	top: 0.5rem;
+	padding: 0.1rem 0.5rem;
+	font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	color: var(--code-badge-fg);
+	background: var(--code-badge-bg);
+	border-radius: 0.5rem;
+	pointer-events: none;
+	transition: opacity 0.3s;
+	opacity: 1;
+}
+.pm-code-block:hover[data-language]::before { opacity: 0; }
+
+/* Copy button — ported from Fuwari plugin-custom-copy-button */
+.pm-code-copy {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border: none;
+	border-radius: 0.25rem;
+	background: transparent;
+	color: var(--code-copy-fg);
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.2s, background 0.2s;
+	z-index: 3;
+}
+.pm-code-copy svg { width: 1.1rem; height: 1.1rem; }
+.pm-code-block:hover .pm-code-copy,
+.pm-code-copy:focus-visible { opacity: 1; }
+.pm-code-copy:hover { background: var(--code-badge-bg); }
+.pm-code-copy.copied { color: oklch(0.65 0.2 140); }
+.pm-code-copy .success-icon { display: none; }
+.pm-code-copy.copied .copy-icon { display: none; }
+.pm-code-copy.copied .success-icon { display: block; }
+
+/* Scrollbar */
+.pm-code-block::-webkit-scrollbar { height: 8px; }
+.pm-code-block::-webkit-scrollbar-track { background: inherit; border-radius: 0 0 var(--pm-radius) var(--pm-radius); }
+.pm-code-block::-webkit-scrollbar-thumb { background: var(--code-scrollbar); border-radius: 10px; border: 4px solid transparent; background-clip: content-box; }
+.pm-code-block::-webkit-scrollbar-thumb:hover { background: var(--pm-secondary); border: 4px solid transparent; background-clip: content-box; }
 
 .pm-post-content hr {
 	margin: 30px 0;
@@ -312,4 +408,58 @@
 
 .pm-comments {
 	margin-top: var(--pm-gap);
+}
+
+/* Admonitions */
+.pm-admonition {
+	border-left: 4px solid;
+	border-radius: 0 var(--pm-radius) var(--pm-radius) 0;
+	padding: 0.8rem 1rem;
+	margin: 1rem 0;
+	background: var(--pm-code-bg);
+}
+
+.pm-admonition .pm-admonition-title {
+	font-weight: 700;
+	margin: 0 0 0.4rem 0;
+	text-transform: uppercase;
+	font-size: 0.85rem;
+}
+
+.pm-admonition.note      { border-color: #448aff; }
+.pm-admonition.tip       { border-color: #00c853; }
+.pm-admonition.important { border-color: #7c4dff; }
+.pm-admonition.warning   { border-color: #ff9100; }
+.pm-admonition.caution   { border-color: #ff1744; }
+
+/* Spoiler */
+.pm-spoiler {
+	background: var(--pm-tertiary);
+	color: transparent;
+	border-radius: 4px;
+	padding: 0 4px;
+	cursor: pointer;
+	transition: color 0.2s, background 0.2s;
+}
+
+.pm-spoiler:hover,
+.pm-spoiler:focus {
+	color: inherit;
+	background: transparent;
+}
+
+/* GitHub Card */
+.pm-github-card {
+	display: block;
+	border: 1px solid var(--pm-border);
+	border-radius: var(--pm-radius);
+	padding: 1rem;
+	margin: 1rem 0;
+	background: var(--pm-code-bg);
+	text-decoration: none;
+	color: inherit;
+}
+
+.pm-github-card:hover {
+	border-color: var(--pm-secondary);
 }

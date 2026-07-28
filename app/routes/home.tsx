@@ -31,7 +31,7 @@ export async function loader() {
     slug: p.slug,
     metadata: {
       ...p.metadata,
-      image: resolvePostAssetPath(p.slug, p.metadata.image),
+      image: resolvePostAssetPath(p.metadata.image),
     },
     html: "",
     rawContent: "",

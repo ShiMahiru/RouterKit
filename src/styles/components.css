@@ -104,12 +104,6 @@
 	background: var(--pm-code-bg);
 }
 
-.pm-page-btn--disabled {
-	color: var(--pm-tertiary);
-	cursor: not-allowed;
-	pointer-events: none;
-}
-
 .pm-page-indicator {
 	padding: 8px 16px;
 	font-size: 14px;

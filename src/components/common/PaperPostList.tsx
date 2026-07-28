@@ -13,21 +13,20 @@ const POSTS_PER_PAGE = 10;
 export default function PaperPostList({ posts }: Props) {
   const [searchParams] = useSearchParams();
   const rawPage = Number(searchParams.get('page') || '0');
-  const currentPage = Number.isFinite(rawPage) && rawPage >= 0 ? rawPage : 0;
   const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
-  const safePage = Math.min(currentPage, totalPages - 1);
+  const page = rawPage;
 
   const paginatedPosts = useMemo(
-    () => posts.slice(safePage * POSTS_PER_PAGE, (safePage + 1) * POSTS_PER_PAGE),
-    [posts, safePage]
+    () => posts.slice(page * POSTS_PER_PAGE, (page + 1) * POSTS_PER_PAGE),
+    [posts, page]
   );
 
   if (posts.length === 0) {
     return <div className="pm-empty">暂无文章</div>;
   }
 
-  const prevTo = safePage === 1 ? '/posts' : `/posts?page=${safePage - 1}`;
-  const nextTo = `/posts?page=${safePage + 1}`;
+  const prevTo = page === 1 ? '/posts' : `/posts?page=${page - 1}`;
+  const nextTo = `/posts?page=${page + 1}`;
 
   return (
     <>
@@ -61,15 +60,15 @@ export default function PaperPostList({ posts }: Props) {
 
       {totalPages > 1 && (
         <nav className="pm-pagination" aria-label="分页">
-          {safePage > 0 && (
+          {page > 0 && (
             <Link to={prevTo} className="pm-page-btn">
               ← 上一页
             </Link>
           )}
 
-          <span className="pm-page-indicator">{safePage + 1} / {totalPages}</span>
+          <span className="pm-page-indicator">{page + 1} / {totalPages}</span>
 
-          {safePage < totalPages - 1 && (
+          {page < totalPages - 1 && (
             <Link to={nextTo} className="pm-page-btn">
               下一页 →
             </Link>

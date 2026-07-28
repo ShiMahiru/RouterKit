@@ -12,6 +12,5 @@ export default [
     route("posts/:slug", "./routes/post-detail.tsx"),
     route("archives", "./routes/archives.tsx"),
     route("search", "./routes/search.tsx"),
-    route("*", "./routes/not-found.tsx"),
   ]),
 ] satisfies RouteConfig;

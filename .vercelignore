@@ -1,1 +1,5 @@
-_headers
+node_modules
+.git
+src/content
+scripts
+lib

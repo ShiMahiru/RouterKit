@@ -35,14 +35,11 @@ export async function loader() {
   });
   ms.addAll(searchItems.map((p, i) => ({ ...p, id: i })));
 
-  return {
-    posts: searchItems,
-    searchIndex: ms.toJSON(),
-  };
+  return { searchIndex: ms.toJSON() };
 }
 
 export default function Search() {
-  const { posts, searchIndex } = useLoaderData<typeof loader>();
+  const { searchIndex } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");

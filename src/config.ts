@@ -1,4 +1,5 @@
 export const siteConfig = {
+	lang: 'zh-CN',
 	url: 'https://blog.242531778.xyz',
 	title: '博客 | Yuln',
 	headerTitle: 'Yuln',

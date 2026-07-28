@@ -75,6 +75,9 @@ export default function Giscus({ slug }: Props) {
   }
 
   useEffect(() => {
+    attemptsRef.current = 0;
+    loadedRef.current = false;
+
     observerRef.current = new MutationObserver(() => updateTheme());
     observerRef.current.observe(document.documentElement, {
       attributes: true,
