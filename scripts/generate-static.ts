@@ -117,23 +117,6 @@ Sitemap: ${SITE_URL}/sitemap.xml
 fs.writeFileSync(path.join(buildDir, 'robots.txt'), robots, 'utf8');
 console.log('[generate-static] robots.txt generated');
 
-// ---- Generate _headers (Cloudflare) ----
-const headers = `/assets/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/rss.xml
-  Cache-Control: public, max-age=3600
-
-/sitemap.xml
-  Cache-Control: public, max-age=3600
-
-/robots.txt
-  Cache-Control: public, max-age=86400
-`;
-
-fs.writeFileSync(path.join(buildDir, '_headers'), headers, 'utf8');
-console.log('[generate-static] _headers generated');
-
 // ---- Generate llms.txt ----
 const llmsLines = [
 	`# ${SITE_TITLE}`,
