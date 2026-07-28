@@ -1,6 +1,5 @@
-/* ===== Header / Nav / Layout / Footer ===== */
 
-/* Header & Nav */
+
 .pm-header-nav {
 	display: flex;
 	flex-wrap: wrap;
@@ -68,7 +67,6 @@
 	font-size: 16px;
 }
 
-/* Main content area */
 .pm-main {
 	position: relative;
 	min-height: calc(100vh - var(--pm-header-height) - var(--pm-footer-height));
@@ -78,7 +76,6 @@
 	overflow-x: hidden;
 }
 
-/* Footer */
 .pm-footer {
 	max-width: calc(var(--pm-main-width) + var(--pm-gap) * 2);
 	margin: auto;
@@ -103,7 +100,6 @@
 	text-underline-offset: 0.25rem;
 }
 
-/* Back to top */
 .pm-top-link {
 	position: fixed;
 	right: 1.5rem;

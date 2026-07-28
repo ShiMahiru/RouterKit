@@ -1,4 +1,4 @@
-// Build-time static file generation: RSS, sitemap.xml, robots.txt, llms.txt, _headers
+
 import { Feed } from 'feed';
 import fs from 'fs';
 import path from 'path';
@@ -18,19 +18,16 @@ const SITE_TITLE = siteConfig.title;
 const SITE_DESC = siteConfig.description;
 const SITE_LANG = 'zh-CN';
 
-// ---- Strip invalid XML chars ----
 function stripInvalidXmlChars(str: string): string {
 	return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\uFDD0-\uFDEF\uFFFE\uFFFF]/g, '');
 }
 
-// ---- Load posts via shared module ----
 const posts = loadAllPosts();
 const md = createMarkdownRenderer();
 
 const buildDir = path.join(projectRoot, 'build', 'client');
 fs.mkdirSync(buildDir, { recursive: true });
 
-// ---- Generate RSS ----
 const feed = new Feed({
 	title: SITE_TITLE,
 	description: SITE_DESC,
@@ -46,7 +43,7 @@ const feed = new Feed({
 for (const post of posts) {
 	const safeContent = stripInvalidXmlChars(post.content);
 	let html = renderPostHtml(safeContent, post.slug, md);
-	// RSS 中的图片需要完整 URL
+
 	html = html.replace(
 		/(<img\s[^>]*?\bsrc=)("|')(?!\/|https?:\/\/)([^"']+)\2/gi,
 		(_, b, q, s) => `${b}${q}${SITE_URL}/posts/${post.slug}/${s}${q}`
@@ -65,7 +62,6 @@ for (const post of posts) {
 fs.writeFileSync(path.join(buildDir, 'rss.xml'), feed.rss2(), 'utf8');
 console.log('[generate-static] rss.xml generated');
 
-// ---- Generate sitemap.xml ----
 const staticPages = [
 	{ loc: SITE_URL, priority: '1.0', changefreq: 'daily' },
 	{ loc: `${SITE_URL}/posts`, priority: '0.9', changefreq: 'daily' },
@@ -108,7 +104,6 @@ ${sitemapEntries.map(e => {
 fs.writeFileSync(path.join(buildDir, 'sitemap.xml'), sitemap, 'utf8');
 console.log('[generate-static] sitemap.xml generated');
 
-// ---- Generate robots.txt ----
 const robots = `User-agent: *
 Allow: /
 Sitemap: ${SITE_URL}/sitemap.xml
@@ -117,7 +112,6 @@ Sitemap: ${SITE_URL}/sitemap.xml
 fs.writeFileSync(path.join(buildDir, 'robots.txt'), robots, 'utf8');
 console.log('[generate-static] robots.txt generated');
 
-// ---- Generate _headers (Cloudflare) ----
 const headers = `/*.data
   Content-Type: application/json; charset=utf-8
 
@@ -140,7 +134,6 @@ const headers = `/*.data
 fs.writeFileSync(path.join(buildDir, '_headers'), headers, 'utf8');
 console.log('[generate-static] _headers generated');
 
-// ---- Generate llms.txt ----
 const llmsLines = [
 	`# ${SITE_TITLE}`,
 	`> ${SITE_DESC}`,

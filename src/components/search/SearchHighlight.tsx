@@ -20,7 +20,7 @@ export default function SearchHighlight({ container, terms }: Props) {
 
 	useEffect(() => {
 		if (!container || terms.length === 0) return;
-		// 清除旧高亮
+
 		container.querySelectorAll('mark.search-highlight').forEach(mark => {
 			mark.replaceWith(document.createTextNode(mark.textContent || ''));
 		});
@@ -74,7 +74,6 @@ export default function SearchHighlight({ container, terms }: Props) {
 			textNode.replaceWith(frag);
 		}
 
-		// 滚动到第一个高亮
 		setTimeout(() => {
 			const firstMark = container.querySelector('mark.search-highlight');
 			if (firstMark) {

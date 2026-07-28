@@ -24,7 +24,7 @@ describe('countPostWords', () => {
 			rawContent: '你好世界',
 			metadata: { ...makePost().metadata, title: '标题', description: '描述' },
 		});
-		// 标题(2) + 描述(2) + 正文(4) = 8
+
 		expect(countPostWords(post)).toBe(8);
 	});
 
@@ -33,8 +33,7 @@ describe('countPostWords', () => {
 			rawContent: 'hello world from the blog',
 			metadata: { ...makePost().metadata, title: 'My Title', description: 'A desc' },
 		});
-		// title: My(1) Title(1) = 2; desc: A(1) desc(1) = 2; content: hello(1) world(1) from(1) the(1) blog(1) = 5
-		// total = 9
+
 		expect(countPostWords(post)).toBe(9);
 	});
 
@@ -43,7 +42,7 @@ describe('countPostWords', () => {
 			rawContent: '这是一篇 blog 文章 about React',
 			metadata: { ...makePost().metadata, title: '测试', description: '' },
 		});
-		// title: 测试(2) + desc: (0) + content: 这是一篇(4) + blog(1) + 文章(2) + about(1) + React(1) = 9
+
 		expect(countPostWords(post)).toBe(11);
 	});
 
@@ -52,7 +51,7 @@ describe('countPostWords', () => {
 			rawContent: '**bold** `code` [link](url) ![img](url)',
 			metadata: { ...makePost().metadata, title: 'Test', description: '' },
 		});
-		// title: Test(1) + content: bold(1) code(1) link(1) = 4
+
 		expect(countPostWords(post)).toBe(4);
 	});
 
@@ -61,7 +60,7 @@ describe('countPostWords', () => {
 			rawContent: 'before ```js\nconst x = 1;\n``` after',
 			metadata: { ...makePost().metadata, title: 'T', description: '' },
 		});
-		// title: T(1) + content: before(1) after(1) = 3
+
 		expect(countPostWords(post)).toBe(3);
 	});
 });

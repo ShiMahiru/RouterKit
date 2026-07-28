@@ -1,4 +1,4 @@
-/* ===== Markdown Content Styles ===== */
+
 
 .pm-post-single,
 .pm-post-content {
@@ -13,7 +13,6 @@
 	font-weight: 700;
 }
 
-/* Post Header */
 .pm-post-header {
 	margin: 24px auto var(--pm-content-gap);
 }
@@ -54,7 +53,6 @@
 	font-size: 14px;
 }
 
-/* Post Content */
 .pm-post-content {
 	margin: 30px 0;
 	color: var(--pm-content);
@@ -198,7 +196,6 @@
 	border: 1px solid var(--pm-border);
 }
 
-/* Search highlight */
 .pm-post-content .search-highlight {
 	background: color-mix(in oklab, oklch(0.88 0.16 90) 70%, transparent);
 	color: inherit;
@@ -206,7 +203,6 @@
 	padding: 0 0.15rem;
 }
 
-/* Mermaid */
 .mermaid-rendered {
 	display: flex;
 	justify-content: center;
@@ -219,7 +215,6 @@
 	font-size: 0.8rem;
 }
 
-/* TOC */
 .pm-toc {
 	margin-bottom: var(--pm-content-gap);
 	background: var(--pm-code-bg);
@@ -283,7 +278,6 @@
 	margin-inline-start: calc(var(--pm-gap) * 3);
 }
 
-/* Post Footer */
 .pm-post-footer {
 	margin-top: var(--pm-content-gap);
 }
@@ -316,7 +310,6 @@
 	color: var(--pm-secondary);
 }
 
-/* Comments */
 .pm-comments {
 	margin-top: var(--pm-gap);
 }

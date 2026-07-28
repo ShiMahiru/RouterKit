@@ -14,7 +14,6 @@ import { resolvePostAssetPath } from "@/utils/markdown";
 import { loadAllPosts, renderPostHtml, createMarkdownRenderer } from "../../lib/posts-loader";
 import { renderMermaidInHtml } from "../../lib/mermaid-renderer";
 
-// ---- 构建时代码高亮 ----
 function highlightCodeInHtml(html: string): string {
   return html.replace(
     /<pre><code(?:\s+class="([^"]*)")?>([\s\S]*?)<\/code><\/pre>/g,
@@ -41,7 +40,6 @@ function highlightCodeInHtml(html: string): string {
   );
 }
 
-// ---- Loader ----
 export async function loader({ params }: LoaderFunctionArgs) {
   const posts = loadAllPosts();
   const post = posts.find(p => p.slug === params.slug);
@@ -50,10 +48,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
   const md = createMarkdownRenderer();
   let html = renderPostHtml(post.content, post.slug, md);
 
-  // 构建时 mermaid 渲染（先渲染，再清洗，保证 SVG 不被过滤）
   html = await renderMermaidInHtml(html);
 
-  // 构建时清洗
   html = DOMPurify.sanitize(html, {
     ALLOWED_TAGS: [
       "h1", "h2", "h3", "h4", "h5", "h6", "p", "a", "img", "ul", "ol", "li",
@@ -73,7 +69,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
     ],
   });
 
-  // 构建时代码高亮
   html = highlightCodeInHtml(html);
 
   return {
@@ -89,7 +84,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
   };
 }
 
-// ---- Meta (rendered inline via React 19 hoisting) ----
 function PostMeta({ post }: { post: { slug: string; metadata: { title: string; description: string; published: string; image: string } } }) {
   const title = `${post.metadata.title} - ${siteConfig.title}`;
   const url = `${siteConfig.url}/posts/${post.slug}/`;
@@ -123,7 +117,6 @@ function PostMeta({ post }: { post: { slug: string; metadata: { title: string; d
   );
 }
 
-// ---- Component ----
 export default function PostDetail() {
   const { post } = useLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();

@@ -1,8 +1,5 @@
-/**
- * 构建时 Mermaid 渲染器。
- * 在 loader 中调用，将 HTML 中的 mermaid 代码块替换为 SVG。
- * 使用 jsdom 为 mermaid 提供 DOM 环境，渲染完成后恢复全局变量。
- */
+
+
 import { JSDOM } from "jsdom";
 import mermaid from "mermaid";
 
@@ -17,10 +14,6 @@ class MockFontFace {
   }
 }
 
-/**
- * 将 HTML 中的 mermaid 代码块替换为渲染后的 SVG。
- * 查找 `<pre><code class="language-mermaid">...</code></pre>` 并替换。
- */
 export async function renderMermaidInHtml(html: string): Promise<string> {
   const re = /<pre><code(?:\s+class="[^"]*language-mermaid[^"]*")?>([\s\S]*?)<\/code><\/pre>/g;
   const matches: { full: string; code: string }[] = [];
@@ -30,7 +23,6 @@ export async function renderMermaidInHtml(html: string): Promise<string> {
   }
   if (matches.length === 0) return html;
 
-  // 保存原始全局变量，渲染完成后恢复
   const prevDocument = (globalThis as any).document;
   const prevFontFace = (globalThis as any).FontFace;
 

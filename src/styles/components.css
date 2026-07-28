@@ -1,4 +1,4 @@
-/* ===== Post Entry Cards & Lists ===== */
+
 
 .pm-post-entry {
 	position: relative;
@@ -79,7 +79,6 @@
 	border-radius: var(--pm-radius);
 }
 
-/* Pagination */
 .pm-pagination {
 	display: flex;
 	justify-content: center;
@@ -117,14 +116,12 @@
 	color: var(--pm-secondary);
 }
 
-/* Empty state */
 .pm-empty {
 	padding: 48px 0;
 	color: var(--pm-secondary);
 	text-align: center;
 }
 
-/* Archives */
 .pm-archive-posts {
 	width: 100%;
 	font-size: 16px;
@@ -184,7 +181,6 @@
 	line-height: 1.2;
 }
 
-/* Search */
 .pm-searchbox {
 	margin-top: var(--pm-content-gap);
 }
@@ -243,7 +239,6 @@
 	font-size: 14px;
 }
 
-/* Responsive */
 @media screen and (max-width: 768px) {
 	:root {
 		--pm-gap: 14px;

@@ -1,6 +1,5 @@
-// Build-time image optimization: compress originals, generate WebP variants.
-// Scans src/content/posts/*/ for images, writes optimized copies to build/posts/*/.
-// Uses .image-cache/ to skip unchanged files across builds.
+
+
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -27,8 +26,6 @@ interface ImageFile {
 	filename: string;
 	ext: string;
 }
-
-// ---- helpers ----
 
 function hashFile(filePath: string): string {
 	const buf = fs.readFileSync(filePath);
@@ -86,8 +83,6 @@ function walkDir(dir: string, slug: string, results: ImageFile[]) {
 	}
 }
 
-// ---- processing ----
-
 async function processImage(img: ImageFile, cache: Map<string, string>): Promise<boolean> {
 	const relativeDir = path.dirname(path.relative(
 		path.join(POSTS_DIR, img.slug),
@@ -99,14 +94,13 @@ async function processImage(img: ImageFile, cache: Map<string, string>): Promise
 	const baseName = path.parse(img.filename).name;
 	const fileHash = hashFile(img.fullPath);
 
-	// Skip if unchanged since last build
 	const cacheKey = `${img.slug}/${img.filename}`;
 	if (cache.get(cacheKey) === fileHash) {
-		// Still need to copy to build (build dir is cleaned by vite)
+
 		if (RASTER_EXTS.has(img.ext)) {
 			const webpPath = path.join(outputDir, `${baseName}.webp`);
 			if (!fs.existsSync(webpPath)) {
-				// WebP was cached but not in build — regenerate
+
 				await generateWebP(img.fullPath, webpPath);
 			}
 		}
@@ -114,7 +108,7 @@ async function processImage(img: ImageFile, cache: Map<string, string>): Promise
 		if (!fs.existsSync(outPath)) {
 			fs.copyFileSync(img.fullPath, outPath);
 		}
-		return false; // skipped (cached)
+		return false;
 	}
 
 	const pipeline = sharp(img.fullPath);
@@ -123,13 +117,11 @@ async function processImage(img: ImageFile, cache: Map<string, string>): Promise
 		pipeline.resize(MAX_WIDTH);
 	}
 
-	// WebP
 	if (RASTER_EXTS.has(img.ext)) {
 		const webpPath = path.join(outputDir, `${baseName}.webp`);
 		await generateWebP(img.fullPath, webpPath);
 	}
 
-	// Compress original
 	const outPath = path.join(outputDir, img.filename);
 	if (img.ext === '.png') {
 		await pipeline.clone().png({ palette: true, quality: 90 }).toFile(outPath);
@@ -140,7 +132,7 @@ async function processImage(img: ImageFile, cache: Map<string, string>): Promise
 	}
 
 	cache.set(cacheKey, fileHash);
-	return true; // processed
+	return true;
 }
 
 async function generateWebP(srcPath: string, destPath: string) {
@@ -148,8 +140,6 @@ async function generateWebP(srcPath: string, destPath: string) {
 		.webp({ quality: WEBP_QUALITY, effort: 4 })
 		.toFile(destPath);
 }
-
-// ---- main ----
 
 async function main() {
 	const images = findImages();

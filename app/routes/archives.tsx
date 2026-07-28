@@ -24,7 +24,6 @@ export async function loader() {
 export default function Archives() {
   const { posts } = useLoaderData<typeof loader>();
 
-  // 按年-月分组
   const groups = new Map<number, Map<string, typeof posts>>();
   for (const post of posts) {
     const d = new Date(post.published);

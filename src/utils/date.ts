@@ -1,7 +1,5 @@
-/**
- * Format a date string as YYYY-MM-DD.
- * Returns the original string if parsing fails.
- */
+
+
 export function formatDate(dateString: string): string {
 	const d = new Date(dateString);
 	if (isNaN(d.getTime())) return dateString;
