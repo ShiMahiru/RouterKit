@@ -3,6 +3,7 @@ import { loadAllPosts } from "./lib/posts-loader";
 
 export default {
   ssr: true,
+  routeDiscovery: { mode: "initial" },
   async prerender() {
     const posts = loadAllPosts();
     return [
