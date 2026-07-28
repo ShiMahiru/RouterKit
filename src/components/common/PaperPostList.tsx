@@ -61,22 +61,18 @@ export default function PaperPostList({ posts }: Props) {
 
       {totalPages > 1 && (
         <nav className="pm-pagination" aria-label="分页">
-          {safePage > 0 ? (
+          {safePage > 0 && (
             <Link to={prevTo} className="pm-page-btn">
               ← 上一页
             </Link>
-          ) : (
-            <span className="pm-page-btn pm-page-btn--disabled">← 上一页</span>
           )}
 
           <span className="pm-page-indicator">{safePage + 1} / {totalPages}</span>
 
-          {safePage < totalPages - 1 ? (
+          {safePage < totalPages - 1 && (
             <Link to={nextTo} className="pm-page-btn">
               下一页 →
             </Link>
-          ) : (
-            <span className="pm-page-btn pm-page-btn--disabled">下一页 →</span>
           )}
         </nav>
       )}
