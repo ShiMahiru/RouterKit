@@ -19,7 +19,7 @@
       "@/*": ["./src/*"]
     },
     "baseUrl": ".",
-    "types": ["@react-router/node", "node"],
+    "types": ["node"],
     "ignoreDeprecations": "6.0"
   },
   "include": ["src", "app", "lib"],
