@@ -1,0 +1,40 @@
+/* Light theme — default */
+@import 'highlight.js/styles/github.css';
+
+/* Dark theme — override when dark mode */
+:root[data-theme='dark'] .hljs {
+	color: #e1e4e8;
+}
+:root[data-theme='dark'] .hljs-comment,
+:root[data-theme='dark'] .hljs-quote { color: #8b949e; }
+:root[data-theme='dark'] .hljs-keyword,
+:root[data-theme='dark'] .hljs-selector-tag,
+:root[data-theme='dark'] .hljs-tag { color: #ff7b72; }
+:root[data-theme='dark'] .hljs-string,
+:root[data-theme='dark'] .hljs-addition { color: #a5d6ff; }
+:root[data-theme='dark'] .hljs-title,
+:root[data-theme='dark'] .hljs-section { color: #d2a8ff; }
+:root[data-theme='dark'] .hljs-variable,
+:root[data-theme='dark'] .hljs-template-variable { color: #ffa657; }
+:root[data-theme='dark'] .hljs-type { color: #ffa657; }
+:root[data-theme='dark'] .hljs-number,
+:root[data-theme='dark'] .hljs-literal { color: #79c0ff; }
+:root[data-theme='dark'] .hljs-built_in,
+:root[data-theme='dark'] .hljs-params { color: #ffa657; }
+:root[data-theme='dark'] .hljs-attr { color: #79c0ff; }
+:root[data-theme='dark'] .hljs-attribute { color: #79c0ff; }
+:root[data-theme='dark'] .hljs-meta { color: #8b949e; }
+:root[data-theme='dark'] .hljs-symbol { color: #79c0ff; }
+:root[data-theme='dark'] .hljs-link { color: #a5d6ff; }
+:root[data-theme='dark'] .hljs-deletion { color: #ffa198; }
+:root[data-theme='dark'] .hljs-selector-id,
+:root[data-theme='dark'] .hljs-selector-class { color: #d2a8ff; }
+:root[data-theme='dark'] .hljs-doctag,
+:root[data-theme='dark'] .hljs-strong { font-weight: bold; }
+:root[data-theme='dark'] .hljs-emphasis { font-style: italic; }
+:root[data-theme='dark'] .hljs-name { color: #d2a8ff; }
+:root[data-theme='dark'] .hljs-regexp { color: #a5d6ff; }
+:root[data-theme='dark'] .hljs-formula { color: #e1e4e8; }
+:root[data-theme='dark'] .hljs-bullet { color: #79c0ff; }
+:root[data-theme='dark'] .hljs-code { color: #e1e4e8; }
+:root[data-theme='dark'] .hljs-subst { color: #e1e4e8; }

@@ -1,0 +1,62 @@
+:root {
+	--hue: 250;
+	--pm-gap: 24px;
+	--pm-content-gap: 20px;
+	--pm-nav-width: 1024px;
+	--pm-main-width: 800px;
+	--pm-header-height: 60px;
+	--pm-footer-height: 60px;
+	--pm-radius: 8px;
+	--pm-theme: rgb(255, 255, 255);
+	--pm-entry: rgb(255, 255, 255);
+	--pm-primary: rgb(30, 30, 30);
+	--pm-secondary: rgb(108, 108, 108);
+	--pm-tertiary: rgb(214, 214, 214);
+	--pm-content: rgb(31, 31, 31);
+	--primary: rgb(37, 99, 235);
+	--pm-code-block-bg: rgb(28, 29, 33);
+	--codeblock-bg: rgb(245, 245, 245);
+	--code-fg: rgb(30, 30, 30);
+	--code-gutter-fg: rgb(160, 160, 160);
+	--code-gutter-border: rgba(128, 128, 128, 0.3);
+	--code-badge-bg: rgb(230, 230, 230);
+	--code-badge-fg: rgb(108, 108, 108);
+	--code-copy-fg: rgba(108, 108, 108, 0.6);
+	--code-scrollbar: rgb(200, 200, 200);
+	--pm-code-bg: rgb(245, 245, 245);
+	--pm-border: rgb(220, 220, 220);
+
+	color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+	--primary: oklch(0.75 0.14 var(--hue));
+	--page-bg: oklch(0.16 0.014 var(--hue));
+	--card-bg: oklch(0.23 0.015 var(--hue));
+
+	--pm-theme: var(--page-bg);
+	--pm-entry: var(--card-bg);
+	--pm-primary: oklch(0.85 0.02 var(--hue));
+	--pm-secondary: oklch(0.65 0.02 var(--hue));
+	--pm-tertiary: oklch(0.35 0.02 var(--hue));
+	--pm-content: oklch(0.80 0.02 var(--hue));
+	--pm-border: oklch(0.28 0.02 var(--hue));
+
+	--codeblock-bg: oklch(0.17 0.015 var(--hue));
+	--codeblock-topbar-bg: oklch(0.12 0.015 var(--hue));
+	--pm-code-block-bg: var(--codeblock-bg);
+	--pm-code-bg: oklch(0.25 0.02 var(--hue));
+	--inline-code-bg: oklch(0.30 0.035 var(--hue));
+	--inline-code-color: oklch(0.75 0.1 var(--hue));
+
+	--code-fg: oklch(0.88 0.01 var(--hue));
+	--code-gutter-fg: oklch(0.40 0.02 var(--hue));
+	--code-gutter-border: oklch(0.40 0.02 var(--hue) / 0.2);
+	--code-badge-bg: oklch(0.33 0.035 var(--hue));
+	--code-badge-fg: oklch(0.75 0.1 var(--hue));
+	--code-copy-fg: oklch(0.75 0.1 var(--hue) / 0.6);
+	--code-copy-hover-bg: oklch(0.33 0.035 var(--hue));
+	--code-scrollbar: oklch(0.45 0.02 var(--hue));
+
+	color-scheme: dark;
+}
