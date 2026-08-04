@@ -1,0 +1,7 @@
+name = "routerkit"
+main = "workers/server.ts"
+compatibility_date = "2025-08-04"
+
+[assets]
+directory = "build/client"
+html_handling = "auto-trailing-slash"

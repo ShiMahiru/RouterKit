@@ -12,6 +12,7 @@
     "prebuild": "rm -rf build/",
     "build": "react-router build",
     "preview": "react-router-serve build/server/index.js",
+    "deploy": "pnpm run build && wrangler deploy",
     "check": "tsc --noEmit",
     "check:watch": "tsc --noEmit --watch"
   },
@@ -19,6 +20,7 @@
     "@react-router/node": "^8.3.0",
     "@react-router/serve": "^8.3.0",
     "highlight.js": "^11.11.1",
+    "isbot": "^5",
     "markdown-it": "^14.1.1",
     "markdown-it-footnote": "^4.0.0",
     "minisearch": "^7.2.0",
@@ -26,8 +28,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router": "^8.3.0",
-    "yaml": "^2.9.0",
-    "isbot": "^5"
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@react-router/dev": "^8.3.0",
@@ -36,6 +37,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.2.3",
     "typescript": "^6.0.2",
-    "vite": "^8.0.7"
+    "vite": "^8.0.7",
+    "wrangler": "^4.118.0"
   }
 }
