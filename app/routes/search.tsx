@@ -7,7 +7,7 @@ import { createPostSearchText } from "@/utils/posts";
 
 export const meta = () => [{ title: `搜索 - ${siteConfig.title}` }];
 
-export async function clientLoader() {
+export async function loader() {
   const posts = loadAllPosts();
   const searchItems = posts.map(p => ({
     slug: p.slug,
@@ -32,7 +32,7 @@ export async function clientLoader() {
 }
 
 export default function Search() {
-  const { searchIndex } = useLoaderData<typeof clientLoader>();
+  const { searchIndex } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");

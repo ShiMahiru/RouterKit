@@ -7,7 +7,7 @@ import { preprocessMarkdown } from './markdown-preprocess.ts';
 export { createMarkdownRenderer } from './markdown-renderer.ts';
 
 // Vite bundles all .md files into the client bundle at build time.
-const modules = import.meta.glob('/src/content/posts/*.md', { query: '?raw', eager: true });
+const modules = import.meta.glob('/src/content/posts/*.md', { eager: true }) as Record<string, { default: string }>;
 
 let _postsCache: LoadedPost[] | null = null;
 
@@ -27,7 +27,8 @@ export function loadAllPosts(): LoadedPost[] {
 
   const posts: LoadedPost[] = [];
 
-  for (const [filePath, raw] of Object.entries(modules)) {
+  for (const [filePath, mod] of Object.entries(modules)) {
+    const raw = mod.default;
     const slug = filePath.replace(/^\/src\/content\/posts\//, '').replace(/\.md$/, '');
     const { metadata: rawMeta, content } = parseFrontmatter(raw);
     if (rawMeta.draft) continue;

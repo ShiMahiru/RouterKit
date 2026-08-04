@@ -2,7 +2,7 @@ import { parseFrontmatter } from '../src/utils/frontmatter.ts';
 import type { Thought, ThoughtMetadata } from '../src/types/thought.ts';
 
 // Vite bundles all .md files into the client bundle at build time.
-const modules = import.meta.glob('/src/content/thoughts/*.md', { query: '?raw', eager: true });
+const modules = import.meta.glob('/src/content/thoughts/*.md', { eager: true }) as Record<string, { default: string }>;
 
 function toThoughtMetadata(raw: Record<string, unknown>): ThoughtMetadata {
   return {
@@ -16,7 +16,8 @@ function toThoughtMetadata(raw: Record<string, unknown>): ThoughtMetadata {
 export function loadAllThoughts(): Thought[] {
   const thoughts: Thought[] = [];
 
-  for (const [filePath, raw] of Object.entries(modules)) {
+  for (const [filePath, mod] of Object.entries(modules)) {
+    const raw = mod.default;
     const slug = filePath.replace(/^\/src\/content\/thoughts\//, '').replace(/\.md$/, '');
     const { metadata: rawMeta, content } = parseFrontmatter(raw);
     const metadata = toThoughtMetadata(rawMeta);

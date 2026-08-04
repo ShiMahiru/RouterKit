@@ -7,7 +7,7 @@ import { resolvePostAssetPath } from "@/utils/markdown";
 
 export const meta = () => [{ title: siteConfig.title }];
 
-export async function clientLoader() {
+export async function loader() {
   const posts = loadAllPosts();
 
   const displayPosts: Post[] = posts.map(p => ({
@@ -24,7 +24,7 @@ export async function clientLoader() {
 }
 
 export default function Home() {
-  const { posts } = useLoaderData<typeof clientLoader>();
+  const { posts } = useLoaderData<typeof loader>();
   return (
     <main className="pm-main pm-list-main">
       <PaperPostList posts={posts} />
