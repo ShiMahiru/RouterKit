@@ -1,5 +1,5 @@
 import { useLoaderData, useSearchParams } from "react-router";
-import type { LoaderFunctionArgs } from "react-router";
+import type { ClientLoaderFunctionArgs } from "react-router";
 import { useCallback, useState, useMemo } from "react";
 import { Link } from "react-router";
 import { siteConfig } from "@/config";
@@ -12,7 +12,7 @@ import { resolvePostAssetPath } from "@/utils/markdown";
 import { loadPostBySlug, renderPostHtml, createMarkdownRenderer } from "../../lib/posts-loader";
 import NotFound from "./not-found";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
   const post = loadPostBySlug(params.slug!);
   if (!post) return { notFound: true as const };
 
@@ -33,14 +33,14 @@ export async function loader({ params }: LoaderFunctionArgs) {
   };
 }
 
-export const meta = ({ loaderData }: { loaderData: Awaited<ReturnType<typeof loader>> }) => {
+export const meta = ({ loaderData }: { loaderData: Awaited<ReturnType<typeof clientLoader>> }) => {
   if (!loaderData || loaderData.notFound) return [{ title: `404 - ${siteConfig.title}` }];
   const post = loaderData.post;
   return [{ title: `${post.metadata.title} - ${siteConfig.title}` }];
 };
 
 export default function PostDetail() {
-  const data = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof clientLoader>();
   if (data.notFound) return <NotFound />;
   const { post } = data;
   const [searchParams] = useSearchParams();

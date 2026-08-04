@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export const meta = () => [{ title: `闲言 - ${siteConfig.title}` }];
 
-export async function loader() {
+export async function clientLoader() {
   const thoughts = loadAllThoughts();
   return {
     thoughts: thoughts.map(t => ({
@@ -18,7 +18,7 @@ export async function loader() {
 }
 
 export default function Thoughts() {
-  const { thoughts } = useLoaderData<typeof loader>();
+  const { thoughts } = useLoaderData<typeof clientLoader>();
 
   return (
     <main className="pm-main">

@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import type { PostMetadata, LoadedPost } from '../src/types/post.ts';
 import { parseFrontmatter, comparePostByPinnedAndDate } from '../src/utils/frontmatter.ts';
 import { createMarkdownRenderer, enhanceCodeBlocks } from './markdown-renderer.ts';
@@ -8,7 +6,8 @@ import { preprocessMarkdown } from './markdown-preprocess.ts';
 // Re-export so existing imports continue to work
 export { createMarkdownRenderer } from './markdown-renderer.ts';
 
-const POSTS_DIR = path.resolve('src/content/posts');
+// Vite bundles all .md files into the client bundle at build time.
+const modules = import.meta.glob('/src/content/posts/*.md', { query: '?raw', eager: true });
 
 let _postsCache: LoadedPost[] | null = null;
 
@@ -26,18 +25,10 @@ function toPostMetadata(raw: Record<string, unknown>): PostMetadata {
 export function loadAllPosts(): LoadedPost[] {
   if (_postsCache) return _postsCache;
 
-  if (!fs.existsSync(POSTS_DIR)) return [];
-
-  const files = fs.readdirSync(POSTS_DIR).filter(name => {
-    const f = path.join(POSTS_DIR, name);
-    return name.endsWith('.md') && fs.statSync(f).isFile();
-  });
-
   const posts: LoadedPost[] = [];
 
-  for (const file of files) {
-    const slug = file.replace(/\.md$/, '');
-    const raw = fs.readFileSync(path.join(POSTS_DIR, file), 'utf8');
+  for (const [filePath, raw] of Object.entries(modules)) {
+    const slug = filePath.replace(/^\/src\/content\/posts\//, '').replace(/\.md$/, '');
     const { metadata: rawMeta, content } = parseFrontmatter(raw);
     if (rawMeta.draft) continue;
 
@@ -51,15 +42,7 @@ export function loadAllPosts(): LoadedPost[] {
 }
 
 export function loadPostBySlug(slug: string): LoadedPost | undefined {
-  const filePath = path.join(POSTS_DIR, `${slug}.md`);
-  if (!fs.existsSync(filePath)) return undefined;
-
-  const raw = fs.readFileSync(filePath, 'utf8');
-  const { metadata: rawMeta, content } = parseFrontmatter(raw);
-  if (rawMeta.draft) return undefined;
-
-  const metadata = toPostMetadata(rawMeta);
-  return { slug, metadata, content };
+  return loadAllPosts().find(p => p.slug === slug);
 }
 
 export function renderPostHtml(content: string, slug: string, md?: ReturnType<typeof createMarkdownRenderer>): string {

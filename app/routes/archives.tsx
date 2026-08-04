@@ -5,7 +5,7 @@ import { loadAllPosts } from "../../lib/posts-loader";
 
 export const meta = () => [{ title: `归档 - ${siteConfig.title}` }];
 
-export async function loader() {
+export async function clientLoader() {
   const posts = loadAllPosts();
   return { posts: posts.map(p => ({
     slug: p.slug,
@@ -15,7 +15,7 @@ export async function loader() {
 }
 
 export default function Archives() {
-  const { posts } = useLoaderData<typeof loader>();
+  const { posts } = useLoaderData<typeof clientLoader>();
 
   const groups = new Map<number, Map<string, typeof posts>>();
   for (const post of posts) {

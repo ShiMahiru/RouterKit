@@ -1,9 +1,8 @@
-import fs from 'fs';
-import path from 'path';
 import { parseFrontmatter } from '../src/utils/frontmatter.ts';
 import type { Thought, ThoughtMetadata } from '../src/types/thought.ts';
 
-const THOUGHTS_DIR = path.resolve('src/content/thoughts');
+// Vite bundles all .md files into the client bundle at build time.
+const modules = import.meta.glob('/src/content/thoughts/*.md', { query: '?raw', eager: true });
 
 function toThoughtMetadata(raw: Record<string, unknown>): ThoughtMetadata {
   return {
@@ -15,18 +14,10 @@ function toThoughtMetadata(raw: Record<string, unknown>): ThoughtMetadata {
 }
 
 export function loadAllThoughts(): Thought[] {
-  if (!fs.existsSync(THOUGHTS_DIR)) return [];
-
-  const files = fs.readdirSync(THOUGHTS_DIR).filter(name => {
-    const f = path.join(THOUGHTS_DIR, name);
-    return name.endsWith('.md') && fs.statSync(f).isFile();
-  });
-
   const thoughts: Thought[] = [];
 
-  for (const file of files) {
-    const slug = file.replace(/\.md$/, '');
-    const raw = fs.readFileSync(path.join(THOUGHTS_DIR, file), 'utf8');
+  for (const [filePath, raw] of Object.entries(modules)) {
+    const slug = filePath.replace(/^\/src\/content\/thoughts\//, '').replace(/\.md$/, '');
     const { metadata: rawMeta, content } = parseFrontmatter(raw);
     const metadata = toThoughtMetadata(rawMeta);
     thoughts.push({ slug, metadata, content: content.trim() });
