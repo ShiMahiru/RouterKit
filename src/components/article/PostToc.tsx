@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 
 interface Heading {
 	id: string;
@@ -34,7 +34,7 @@ export default function PostToc({ container, trigger }: Props) {
 		[headings]
 	);
 
-	function rebuild(remainingRetries = 4) {
+	const rebuild = useCallback((remainingRetries = 4) => {
 		if (!container) return;
 
 		observerRef.current?.disconnect();
@@ -85,7 +85,7 @@ export default function PostToc({ container, trigger }: Props) {
 			return r.bottom > 80;
 		});
 		setActiveId((firstVisible || els[0]).id);
-	}
+	}, [container]);
 
 	useEffect(() => {
 		rebuild();
@@ -93,8 +93,7 @@ export default function PostToc({ container, trigger }: Props) {
 			if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
 			observerRef.current?.disconnect();
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [container, trigger]);
+	}, [rebuild, trigger]);
 
 	function handleClick(e: React.MouseEvent, id: string) {
 		const el = document.getElementById(id);

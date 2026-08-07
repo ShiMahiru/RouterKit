@@ -1,7 +1,6 @@
-name = "routerkit"
-main = "workers/server.ts"
+name = "yuln-blog"
 compatibility_date = "2025-08-04"
 
 [assets]
-directory = "build/client"
+directory = "dist"
 html_handling = "auto-trailing-slash"

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useSearchParams } from 'react-router-dom';
 import type { Post } from '@/types/post';
 import { formatDate } from '@/utils/date';
 

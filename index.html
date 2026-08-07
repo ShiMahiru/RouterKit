@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Yuln | 博客</title>
+    <script>
+      (function(){var t=localStorage.getItem('pref-theme');if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;if(t==='dark'){document.documentElement.classList.add('dark');var m=document.querySelector('meta[name="theme-color"]');if(m)m.content='#1d1e20'}})();
+    </script>
+    <script>
+      document.addEventListener('click',function(e){var b=e.target.closest('.pm-code-copy');if(!b)return;var code=b.parentElement.querySelector('code');if(!code)return;var text=Array.from(code.querySelectorAll('.ec-line .code')).map(function(l){return l.textContent||''}).join('\n');navigator.clipboard.writeText(text).then(function(){b.classList.add('copied');setTimeout(function(){b.classList.remove('copied')},2000)}).catch(function(){})});
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

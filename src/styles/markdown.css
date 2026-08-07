@@ -297,18 +297,6 @@
 	padding: 0 0.15rem;
 }
 
-.mermaid-rendered {
-	display: flex;
-	justify-content: center;
-	margin: 1rem 0;
-	overflow-x: auto;
-}
-
-.mermaid-error {
-	color: oklch(0.58 0.24 27);
-	font-size: 0.8rem;
-}
-
 .pm-toc {
 	margin-bottom: var(--pm-content-gap);
 	background: var(--pm-code-bg);
