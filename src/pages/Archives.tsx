@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { siteConfig } from "@/config";
+import SEO from "@/components/common/SEO";
 import { loadAllPosts } from "@/lib/posts-loader";
 
 export default function Archives() {
@@ -9,15 +9,18 @@ export default function Archives() {
   >([]);
 
   useEffect(() => {
-    const all = loadAllPosts();
-    setPosts(
-      all.map((p) => ({
-        slug: p.slug,
-        title: p.metadata.title,
-        published: p.metadata.published,
-      }))
-    );
-    document.title = `归档 - ${siteConfig.title}`;
+    let cancelled = false;
+    loadAllPosts().then((all) => {
+      if (cancelled) return;
+      setPosts(
+        all.map((p) => ({
+          slug: p.slug,
+          title: p.metadata.title,
+          published: p.metadata.published,
+        }))
+      );
+    });
+    return () => { cancelled = true; };
   }, []);
 
   const groups = new Map<number, Map<string, typeof posts>>();
@@ -34,6 +37,7 @@ export default function Archives() {
 
   return (
     <main className="pm-main">
+      <SEO title="归档" />
       <header className="pm-page-header">
         <h1>归档</h1>
       </header>

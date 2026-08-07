@@ -8,6 +8,8 @@ import PostToc from "@/components/article/PostToc";
 import SearchHighlight, {
   parseQueryTerms,
 } from "@/components/search/SearchHighlight";
+import SEO from "@/components/common/SEO";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 import { loadPostBySlug, renderPostHtml, createMarkdownRenderer } from "@/lib/posts-loader";
 import NotFound from "./NotFound";
 
@@ -20,7 +22,6 @@ export default function PostDetail() {
     | null
   >(null);
 
-  // All hooks must come BEFORE any conditional return (React rules of hooks)
   const [proseElement, setProseElement] = useState<HTMLDivElement | null>(null);
   const proseCallbackRef = useCallback((el: HTMLDivElement | null) => {
     setProseElement(el);
@@ -32,36 +33,31 @@ export default function PostDetail() {
   }, [searchParams]);
 
   useEffect(() => {
+    let cancelled = false;
     if (!slug) {
       setData({ notFound: true });
       return;
     }
-    const post = loadPostBySlug(slug);
-    if (!post) {
-      setData({ notFound: true });
-      return;
-    }
-    const md = createMarkdownRenderer();
-    const html = renderPostHtml(post.content, md);
-    setData({
-      notFound: false,
-      post: {
-        slug: post.slug,
-        metadata: { ...post.metadata },
-        html,
-        rawContent: post.content,
-      },
+    loadPostBySlug(slug).then((post) => {
+      if (cancelled) return;
+      if (!post) {
+        setData({ notFound: true });
+        return;
+      }
+      const md = createMarkdownRenderer();
+      const html = renderPostHtml(post.content, md, post.metadata.title);
+      setData({
+        notFound: false,
+        post: {
+          slug: post.slug,
+          metadata: { ...post.metadata },
+          html,
+          rawContent: post.content,
+        },
+      });
     });
+    return () => { cancelled = true; };
   }, [slug]);
-
-  useEffect(() => {
-    if (!data) return;
-    if (data.notFound) {
-      document.title = `404 - ${siteConfig.title}`;
-    } else {
-      document.title = `${data.post.metadata.title} - ${siteConfig.title}`;
-    }
-  }, [data]);
 
   if (!data) return null;
   if (data.notFound) return <NotFound />;
@@ -71,48 +67,60 @@ export default function PostDetail() {
 
   return (
     <main className="pm-main">
-      <article className="pm-post-single">
-        <ArticleHeader post={post} />
+      <SEO
+        title={post.metadata.title}
+        description={post.metadata.description || undefined}
+        image={post.metadata.image || undefined}
+        url={`${siteConfig.url}/posts/${post.slug}`}
+        type="article"
+        published={post.metadata.published}
+      />
+      <ErrorBoundary>
+        <article className="pm-post-single">
+          <ArticleHeader post={post} />
 
-        {post.metadata.image && (
-          <figure className="pm-entry-cover">
-            <img
-              loading="eager"
-              fetchPriority="high"
-              src={post.metadata.image}
-              alt=""
-              sizes="100vw"
+          {post.metadata.image && (
+            <figure className="pm-entry-cover">
+              <img
+                loading="eager"
+                fetchPriority="high"
+                src={post.metadata.image}
+                alt=""
+                sizes="100vw"
+              />
+            </figure>
+          )}
+
+          {showToc && <PostToc container={proseElement} trigger={post.slug} />}
+
+          <div ref={proseCallbackRef} className="pm-post-content">
+            <div dangerouslySetInnerHTML={{ __html: post.html }} />
+          </div>
+
+          {highlightTerms.length > 0 && (
+            <SearchHighlight
+              container={proseElement}
+              terms={highlightTerms}
             />
-          </figure>
-        )}
+          )}
 
-        {showToc && <PostToc container={proseElement} trigger={post.slug} />}
+          <footer className="pm-post-footer">
+            <nav className="pm-paginav">
+              <Link to="/posts">
+                <span className="title">« 返回</span>
+                <span>文章列表</span>
+              </Link>
+            </nav>
+          </footer>
 
-        <div ref={proseCallbackRef} className="pm-post-content">
-          <div dangerouslySetInnerHTML={{ __html: post.html }} />
-        </div>
-
-        {highlightTerms.length > 0 && (
-          <SearchHighlight
-            container={proseElement}
-            terms={highlightTerms}
-          />
-        )}
-
-        <footer className="pm-post-footer">
-          <nav className="pm-paginav">
-            <Link to="/posts">
-              <span className="title">« 返回</span>
-              <span>文章列表</span>
-            </Link>
-          </nav>
-        </footer>
-
-        <div id="comments">
-          <Giscus slug={post.slug} />
-        </div>
-      </article>
-      <ImageViewer key={post.slug} />
+          <div id="comments">
+            <ErrorBoundary fallback={<div className="pm-error-boundary"><p>评论加载失败</p></div>}>
+              <Giscus slug={post.slug} />
+            </ErrorBoundary>
+          </div>
+        </article>
+        <ImageViewer key={post.slug} />
+      </ErrorBoundary>
     </main>
   );
 }

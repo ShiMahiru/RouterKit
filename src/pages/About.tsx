@@ -1,38 +1,41 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import SEO from "@/components/common/SEO";
 import { siteConfig } from "@/config";
 import { createMarkdownRenderer } from "@/lib/markdown-renderer";
+import { parseFrontmatter } from "@/utils/frontmatter";
 
-// Vite bundles .md files into the client bundle at build time.
 const modules = import.meta.glob("/content/about.md", {
   eager: true,
 }) as Record<string, { default: string }>;
 
-function getAboutContent(): string {
+function getAboutData() {
   for (const mod of Object.values(modules)) {
-    return mod.default;
+    const raw = mod.default;
+    const { metadata, content } = parseFrontmatter(raw);
+    const md = createMarkdownRenderer();
+    const html = md.render(content);
+    return {
+      title: (metadata.title as string) || "关于",
+      description: (metadata.description as string) || siteConfig.description,
+      html,
+    };
   }
-  return "";
+  return {
+    title: "关于",
+    description: siteConfig.description,
+    html: "",
+  };
 }
 
 export default function About() {
-  const [html, setHtml] = useState("");
-
-  useEffect(() => {
-    document.title = `关于 - ${siteConfig.title}`;
-  }, []);
-
-  useEffect(() => {
-    const raw = getAboutContent();
-    const md = createMarkdownRenderer();
-    const rendered = md.render(raw);
-    setHtml(rendered);
-  }, []);
+  const [{ html, title, description }] = useState(getAboutData);
 
   return (
     <main className="pm-main">
+      <SEO title={title} description={description} />
       <article className="pm-post-single">
         <header className="pm-post-header">
-          <h1 className="pm-post-title">关于</h1>
+          <h1 className="pm-post-title">{title}</h1>
         </header>
         <div className="pm-post-content">
           <div

@@ -1,17 +1,22 @@
 /**
  * Build-time image optimizer.
  * Converts jpg/png/gif → webp, then compresses everything to fit 1920px.
+ * Skips images that haven't changed since last run (hash-based cache).
  *
  * Source:   public/images/
  * Output:   public/images/  (overwrites in place, keeps only .webp)
+ * Cache:    .image-cache/   (file hashes to skip unchanged images)
  * Invoked:  pnpm optimize-images
  */
 
 import sharp from "sharp";
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
 
 const DIR = path.resolve("public/images");
+const CACHE_DIR = path.resolve(".image-cache");
+const CACHE_FILE = path.join(CACHE_DIR, "hashes.json");
 const MAX_WIDTH = 1920;
 const WEBP_QUALITY = 80;
 
@@ -19,6 +24,23 @@ function humanSize(bytes) {
   if (bytes > 1_000_000) return (bytes / 1_000_000).toFixed(1) + " MB";
   if (bytes > 1_000) return (bytes / 1_000).toFixed(1) + " KB";
   return bytes + " B";
+}
+
+function fileHash(filePath) {
+  return crypto.createHash("sha256").update(fs.readFileSync(filePath)).digest("hex");
+}
+
+function loadCache() {
+  try {
+    return JSON.parse(fs.readFileSync(CACHE_FILE, "utf-8"));
+  } catch {
+    return {};
+  }
+}
+
+function saveCache(cache) {
+  fs.mkdirSync(CACHE_DIR, { recursive: true });
+  fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
 }
 
 async function optimizeFile(filePath) {
@@ -30,7 +52,6 @@ async function optimizeFile(filePath) {
     withoutEnlargement: true,
   });
 
-  // Already webp → just re-encode at target quality.  Other formats → convert.
   pipeline = pipeline.webp({ quality: WEBP_QUALITY, effort: 4 });
 
   const tmpPath = filePath + ".tmp";
@@ -38,11 +59,9 @@ async function optimizeFile(filePath) {
 
   const after = fs.statSync(tmpPath).size;
 
-  // Replace original even if already .webp
   const outPath = ext === ".webp" ? filePath : filePath.replace(ext, ".webp");
   fs.renameSync(tmpPath, outPath);
 
-  // If we converted from another format, delete original
   if (ext !== ".webp") {
     fs.unlinkSync(filePath);
   }
@@ -66,12 +85,31 @@ async function main() {
     return;
   }
 
-  console.log(`  Optimizing ${files.length} images …`);
+  const cache = loadCache();
+  const newCache = {};
+  const toOptimize = [];
+
+  for (const file of files) {
+    const hash = fileHash(file);
+    newCache[path.basename(file)] = hash;
+    if (cache[path.basename(file)] === hash) {
+      continue; // unchanged
+    }
+    toOptimize.push(file);
+  }
+
+  if (toOptimize.length === 0) {
+    console.log("  All images up to date (cached).");
+    saveCache(newCache);
+    return;
+  }
+
+  console.log(`  Optimizing ${toOptimize.length} images (${files.length - toOptimize.length} cached) …`);
 
   let totalBefore = 0;
   let totalAfter = 0;
 
-  for (const file of files) {
+  for (const file of toOptimize) {
     const { before, after } = await optimizeFile(file);
     totalBefore += before;
     totalAfter += after;
@@ -81,7 +119,11 @@ async function main() {
     );
   }
 
-  console.log(`  Done: ${humanSize(totalBefore)} → ${humanSize(totalAfter)}  (-${Math.round(((totalBefore - totalAfter) / totalBefore) * 100)}%)`);
+  if (totalBefore > 0) {
+    console.log(`  Done: ${humanSize(totalBefore)} → ${humanSize(totalAfter)}  (-${Math.round(((totalBefore - totalAfter) / totalBefore) * 100)}%)`);
+  }
+
+  saveCache(newCache);
 }
 
 main();

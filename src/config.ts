@@ -19,5 +19,12 @@ export const siteConfig = {
 		theme: 'preferred_color_scheme',
 		lang: 'zh-CN',
 		loading: 'lazy'
+	},
+	/** 访问分析服务，留空则不启用 */
+	analytics: {
+		/** Umami 部署实例 (自行搭建服务地址)，例如 'https://umami.example.com' */
+		umamiUrl: '',
+		/** Umami 网站 ID */
+		umamiId: ''
 	}
 } as const;

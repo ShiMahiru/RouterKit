@@ -10,10 +10,12 @@
   "scripts": {
     "dev": "vite",
     "optimize-images": "node scripts/optimize-images.js",
-    "build": "node scripts/optimize-images.js && tsc --noEmit && vite build",
+    "build": "node scripts/optimize-images.js && tsc --noEmit && vite build && node scripts/generate-rss.js && node scripts/generate-sitemap.js",
     "preview": "vite preview",
     "check": "tsc --noEmit",
     "check:watch": "tsc --noEmit --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "deploy": "pnpm run build && wrangler deploy"
   },
   "dependencies": {
@@ -31,10 +33,11 @@
     "@types/markdown-it": "^14.1.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^6.0.5",
     "sharp": "^0.35.3",
     "typescript": "^6.0.2",
     "vite": "^8.0.7",
+    "vitest": "^4.1.10",
     "wrangler": "^4.118.0"
   }
 }

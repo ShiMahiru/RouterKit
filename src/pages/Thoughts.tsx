@@ -1,30 +1,34 @@
 import { useEffect, useState } from "react";
+import SEO from "@/components/common/SEO";
 import { siteConfig } from "@/config";
 import { loadAllThoughts } from "@/lib/thoughts-loader";
 import ImageViewer from "@/components/article/ImageViewer";
+import AudioPlayer from "@/components/article/AudioPlayer";
 
 export default function Thoughts() {
   const [thoughts, setThoughts] = useState<
-    { date: string; images: string[]; content: string }[]
+    { date: string; images: string[]; audio?: string; content: string }[]
   >([]);
 
   useEffect(() => {
-    document.title = `闲言 - ${siteConfig.title}`;
-  }, []);
-
-  useEffect(() => {
-    const all = loadAllThoughts();
-    setThoughts(
-      all.map((t) => ({
-        date: t.metadata.date,
-        images: t.metadata.images ?? [],
-        content: t.content,
-      }))
-    );
+    let cancelled = false;
+    loadAllThoughts().then((all) => {
+      if (cancelled) return;
+      setThoughts(
+        all.map((t) => ({
+          date: t.metadata.date,
+          images: t.metadata.images ?? [],
+          audio: t.metadata.audio,
+          content: t.content,
+        }))
+      );
+    });
+    return () => { cancelled = true; };
   }, []);
 
   return (
     <main className="pm-main">
+      <SEO title="闲言" />
       <header className="pm-page-header">
         <h1>闲言</h1>
       </header>
@@ -60,6 +64,7 @@ export default function Thoughts() {
                       ))}
                     </div>
                   )}
+                  {t.audio && <AudioPlayer src={t.audio} />}
                   <div className="pm-moment-footer">
                     <time className="pm-moment-time" dateTime={t.date}>
                       <MomentTime dateStr={t.date} />

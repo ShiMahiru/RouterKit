@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import MiniSearch from "minisearch";
-import { siteConfig } from "@/config";
-import { loadAllPosts } from "@/lib/posts-loader";
-import { createPostSearchText } from "@/utils/posts";
+import SEO from "@/components/common/SEO";
+import { loadAllPosts, createPostSearchTextFromLoaded } from "@/lib/posts-loader";
 
 export default function Search() {
   const navigate = useNavigate();
@@ -16,32 +15,26 @@ export default function Search() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    document.title = `搜索 - ${siteConfig.title}`;
-  }, []);
-
-  // Build search index client-side on first mount
-  useEffect(() => {
-    const posts = loadAllPosts();
-    const searchItems = posts.map((p) => ({
-      slug: p.slug,
-      title: p.metadata.title,
-      description: p.metadata.description,
-      searchText: createPostSearchText({
+    let cancelled = false;
+    loadAllPosts().then((posts) => {
+      if (cancelled) return;
+      const searchItems = posts.map((p) => ({
         slug: p.slug,
-        metadata: p.metadata,
-        html: "",
-        rawContent: p.content,
-      }),
-    }));
+        title: p.metadata.title,
+        description: p.metadata.description,
+        searchText: createPostSearchTextFromLoaded(p),
+      }));
 
-    const ms = new MiniSearch({
-      fields: ["title", "description", "searchText"],
-      storeFields: ["title", "description", "slug"],
-      searchOptions: { prefix: true, fuzzy: 0.2 },
+      const ms = new MiniSearch({
+        fields: ["title", "description", "searchText"],
+        storeFields: ["title", "description", "slug"],
+        searchOptions: { prefix: true, fuzzy: 0.2 },
+      });
+      ms.addAll(searchItems.map((p, i) => ({ ...p, id: i })));
+      searcherRef.current = ms;
+      setReady(true);
     });
-    ms.addAll(searchItems.map((p, i) => ({ ...p, id: i })));
-    searcherRef.current = ms;
-    setReady(true);
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -64,6 +57,7 @@ export default function Search() {
 
   return (
     <main className="pm-main">
+      <SEO title="搜索" />
       <header className="pm-page-header">
         <h1>搜索</h1>
       </header>
