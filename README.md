@@ -1,5 +1,7 @@
 # yuln-blog
 
+[![Deploy](https://github.com/ShiMahiru/Yuln-blog/actions/workflows/deploy.yml/badge.svg)](https://github.com/ShiMahiru/Yuln-blog/actions)
+
 基于 **Vite 8 + React 19 + react-router-dom v7 + TypeScript 6** 的纯静态博客。所有 `.md` 内容通过 `import.meta.glob` 按需懒加载为独立 code-split chunk，客户端渲染（CSR），零服务端运行时。
 
 ## 技术栈
